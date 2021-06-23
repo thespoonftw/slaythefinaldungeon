@@ -7,18 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class Sprites : MonoBehaviour {
+public class SpriteLoader : MonoBehaviour {
 
-    public static Dictionary<int, Sprite> dictionary;
-    private static Sprites instance;
+    private Dictionary<int, Sprite> dictionary;
 
-    public static void Init() {
-        var go = new GameObject("Sprites");
-        instance = go.AddComponent<Sprites>();
-        instance.Load();
-    }
-
-    private void Load() {
+    public Dictionary<int, Sprite> Load() {
         dictionary = new Dictionary<int, Sprite>();
         var path = Application.streamingAssetsPath + "/Sprites";
         var files = Directory.GetFiles(path);
@@ -26,8 +19,8 @@ public class Sprites : MonoBehaviour {
             if (f.EndsWith(".meta")) { continue; }
             StartCoroutine("LoadSprite", f);
         }
+        return dictionary;
     }
-
 
     private IEnumerator LoadSprite(string path) {
         var backslash = new char[] { '\\' };

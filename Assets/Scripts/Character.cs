@@ -5,17 +5,30 @@ using UnityEngine;
 
 public class Character : MonoBehaviour {
 
-    [SerializeField] TextMeshPro text;
-    [SerializeField] SpriteRenderer sprite;
+    public CharacterView View { get; set; }
+
+    public int str;
+    public int maxHp;
+    public int currentHp;
+    public int spriteId;
+
+    public bool IsAlive => currentHp > 0;
     
-    public void Init(Hero hero) {
-        text.text = hero.hp + " / " + hero.hp;
-        sprite.sprite = Sprites.dictionary[hero.sprite];
+    public void Init(CharacterData data) {        
+        maxHp = data.hp;
+        currentHp = data.hp;        
+        str = data.str;
+        View = GetComponent<CharacterView>();
+        View.Init();
     }
 
-    public void Init(Enemy enemy) {
-        text.text = enemy.hp + " / " + enemy.hp;
-        sprite.sprite = Sprites.dictionary[enemy.sprite];
+    public void TakeDamage(int amount) {
+        currentHp -= amount;
     }
+
+    public void TakeAction() {
+        // make the sprite wiggle or something
+    }
+
     
 }
