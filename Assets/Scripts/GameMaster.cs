@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour {
@@ -8,12 +9,14 @@ public class GameMaster : MonoBehaviour {
     [SerializeField] List<GameObject> heroSpots;
     [SerializeField] List<GameObject> enemySpots;
     [SerializeField] GameObject characterPrefab;
+    [SerializeField] TextMeshProUGUI centreText;
 
     private List<Character> turnOrder;
     private List<Character> enemies;
     private List<Character> heroes;
     private int turnIndex = 0;
     private float timeBetweenTurns = 1;
+    private int encounterIndex = 1;
     
 
     public bool IsVictorious => !enemies.Any(e => e.IsAlive);
@@ -22,17 +25,17 @@ public class GameMaster : MonoBehaviour {
 
     void Start() {
         gameObject.AddComponent<Data>().LoadData();
-        SetupEncounter(1);
+        SetupEncounter();
         StartNextTurn();
     }
 
     private void StartNextTurn() {
-        if (IsVictorious) { Debug.Log("Victory!"); return; }
-        if (IsDefeat) { Debug.Log("Defeat!"); return; }
+        if (IsVictorious) { BattleWon(); return; }
+        if (IsDefeat) { GameOver(); return; }
 
         turnIndex++;
         if (turnIndex == turnOrder.Count) { turnIndex = 0; }
-        if (CurrentCharacter.IsAlive) { StartNextTurn(); return; }
+        if (!CurrentCharacter.IsAlive) { StartNextTurn(); return; }
 
         if (enemies.Contains(CurrentCharacter)) {
             ChooseEnemyAction();
@@ -66,18 +69,19 @@ public class GameMaster : MonoBehaviour {
         if (action.target != null) {
             action.target.TakeDamage(action.damage);
         }
-        action.source.TakeAction();
-        Helper.WaitForTime(timeBetweenTurns);
-        StartNextTurn();
+        action.source.Animation.Value = 1;
+        Helper.DelayAction(timeBetweenTurns, StartNextTurn);
     }
 
-    private void SetupEncounter(int encounterId) {
+    private void SetupEncounter() {
         turnIndex = -1;
+        heroes = new List<Character>();
+        enemies = new List<Character>();
         turnOrder = new List<Character>();
         turnOrder.Add(CreateHero(heroSpots[0], Data.heroes[1]));
         turnOrder.Add(CreateHero(heroSpots[1], Data.heroes[2]));
         turnOrder.Add(CreateHero(heroSpots[2], Data.heroes[3]));
-        var encounter = Data.encounters[encounterId];
+        var encounter = Data.encounters[encounterIndex];
         for (int i = 0; i < 4; i++) {
             if (encounter.enemies[i] == 0) { continue; }
             turnOrder.Add(CreateEnemy(enemySpots[i], Data.enemies[encounter.enemies[i]]));
@@ -98,6 +102,21 @@ public class GameMaster : MonoBehaviour {
         character.Init(data);
         enemies.Add(character);
         return character;
+    }
+
+    private void BattleWon() {
+        centreText.text = "Battle Won";
+        encounterIndex++;
+        if (Data.encounters.ContainsKey(encounterIndex)) {
+            Helper.DelayAction(2f, SetupEncounter);
+            Helper.DelayAction(2f, () => centreText.text = "");
+        } else {
+            GameOver();
+        }        
+    }
+
+    private void GameOver() {
+        centreText.text = "Game Over";
     }
 
 }
