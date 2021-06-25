@@ -9,31 +9,31 @@ public class CharacterData {
     public int id;
     public string name;
     public int sprite;
-    public int hp;
+    public int maxHp;
     public int str;
-
 }
 
-public class Enemy : CharacterData
-{
-    public Enemy(List<string> data)
-    {
+public class EnemyData : CharacterData {
+
+    public EnemyData(List<string> data) {
         id = int.Parse(data[0]);
         name = data[1];
         sprite = int.Parse(data[2]);
-        hp = int.Parse(data[3]);
+        maxHp = int.Parse(data[3]);
         str = int.Parse(data[4]);
     }
 }
 
-public class Hero : CharacterData
-{
-    public Hero(List<string> data)
-    {
+public class HeroData : CharacterData {
+
+    public int currentHp;
+
+    public HeroData(List<string> data) {
         id = int.Parse(data[0]);
         name = data[1];
         sprite = int.Parse(data[2]);
-        hp = int.Parse(data[3]);
+        currentHp = int.Parse(data[3]);
+        maxHp = int.Parse(data[3]);
         str = int.Parse(data[4]);
     }
 }

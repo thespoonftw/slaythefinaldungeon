@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 public class Action {
 
-    public Character source;
-    public Character target;
+    public Combatant source;
+    public Combatant target;
     public int damage;
 
 }

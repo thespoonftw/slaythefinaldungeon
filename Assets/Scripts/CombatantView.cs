@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class CharacterView : MonoBehaviour {
+public class CombatantView : MonoBehaviour {
 
     [SerializeField] TextMeshPro text;
     [SerializeField] SpriteRenderer sprite;
@@ -11,10 +11,10 @@ public class CharacterView : MonoBehaviour {
     private bool isFlickerOn;
     private bool isFlickering;
 
-    public Character Model { get; set; }
+    public Combatant Model { get; set; }
 
     public void Init() {
-        Model = GetComponent<Character>();
+        Model = GetComponent<Combatant>();
         sprite.sprite = Data.sprites[Model.spriteId];
         UpdateHealthText();
         Model.CurrentHp.OnUpdate += UpdateHealthText;
@@ -45,11 +45,11 @@ public class CharacterView : MonoBehaviour {
         if (animationIndex == 1) {
             var offset = Model.isHero ? 0.5f : -0.5f;
             sprite.transform.localPosition = new Vector3(offset, 0, 0);
-            Helper.DelayAction(0.25f, () => sprite.transform.localPosition = new Vector3(0, 0, 0) );
+            Helper.DelayMethod(0.25f, () => sprite.transform.localPosition = new Vector3(0, 0, 0) );
             
         } else if (animationIndex == 2) {
             isFlickering = true;
-            Helper.DelayAction(0.5f, StopFlickering);
+            Helper.DelayMethod(0.5f, StopFlickering);
             
         } else if (animationIndex == 3) {
             sprite.color = Color.black;

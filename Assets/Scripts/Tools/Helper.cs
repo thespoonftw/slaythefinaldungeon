@@ -18,7 +18,7 @@ public class Helper : Singleton<Helper> {
         action.Invoke();
     }
 
-    public static void DelayAction(float timeInSeconds, Action action) {
+    public static void DelayMethod(float timeInSeconds, Action action) {
         Instance.StartCoroutine(WaitCoroutine(timeInSeconds, action));        
     }
 
