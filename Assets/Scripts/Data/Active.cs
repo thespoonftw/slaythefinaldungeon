@@ -5,17 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 public enum ActiveType {
-    attack,
+    dmg,
     heal,
+    buff,
 }
 
 public enum TargettingType { 
-    none,
-    enemy,
-    allEnemies,
-    ally,
-    allAllies,
-    all,
+    Self,
+    Enemy,
+    AllEnemies,
+    Adjacent,
+    AllAdjacent,   
+    Friendly,
+    AllFriendly,
 }
 
 public class Active {
@@ -23,6 +25,7 @@ public class Active {
     public ActiveType type;
     public int amount;
     public TargettingType targettingType;
+    public Buff buff;
 
     public Active(ActiveType type, TargettingType targettingType, int amount) {
         this.type = type;
@@ -31,20 +34,44 @@ public class Active {
     }
 
     public Active(string data) {
-        var split = data.Split('(');
-        amount = int.Parse(split[1].Substring(0, split[1].Length - 1));
+        var split = data.Split('-');
 
-        switch (split[0]) {
-            case "attack":
-                type = ActiveType.attack; targettingType = TargettingType.enemy; break;
-            case "attackAll":
-                type = ActiveType.attack; targettingType = TargettingType.allEnemies; break;
+        var splitFirst = split[0].Split('(');
+
+        switch (splitFirst[0]) {
+            case "dmg":
+                type = ActiveType.dmg; break;
             case "heal":
-                type = ActiveType.heal; targettingType = TargettingType.ally; break;
-            case "healAll":
-                type = ActiveType.heal; targettingType = TargettingType.allAllies; break;
+                type = ActiveType.heal; break;
+            case "buff":
+                type = ActiveType.buff;
+                var buffcode = splitFirst[1].Substring(0, splitFirst[1].Length - 1);
+                buff = Data.buffs[Helper.ParseEnum<BuffType>(buffcode)];
+                break;
 
-        } 
+        }
+
+        switch (split[1]) {
+            case "s":
+                targettingType = TargettingType.Self; break;
+            case "e":
+                targettingType = TargettingType.Enemy; break;
+            case "ae":
+                targettingType = TargettingType.AllEnemies; break;
+            case "a":
+                targettingType = TargettingType.Adjacent; break;
+            case "aa":
+                targettingType = TargettingType.AllAdjacent; break;
+            case "f":
+                targettingType = TargettingType.Friendly; break;
+            case "af":
+                targettingType = TargettingType.AllFriendly; break;
+
+        }
+
+
+        amount = int.Parse(split[2]);
+
 
     }
 }

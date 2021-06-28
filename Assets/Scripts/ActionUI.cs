@@ -96,7 +96,7 @@ public class ActionUI : MonoBehaviour {
         var actionType = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
         if (actionType.RequiresEnemyTarget) {
             Helper.DelayMethod(0.1f, () => StartTargetChoice(true));
-        } else if (actionType.RequiresAllyTarget) {
+        } else if (actionType.RequiresFriendlyTarget) {
             Helper.DelayMethod(0.1f, () => StartTargetChoice(false));
         } else {
             gameMaster.PerformAction(actionType.CreateAction(CurrentCombatant));

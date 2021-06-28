@@ -56,7 +56,7 @@ public class GameMaster : Singleton<GameMaster> {
         if (!CurrentCombatant.IsAlive) { StartNextTurn(); return; }
 
         if (!CurrentCombatant.isHero) {
-            PerformAction(Action.BasicAttack(2, CurrentCombatant, Helper.RandomFromList(LivingHeroes)));
+            //PerformAction(Action.BasicAttack(2, CurrentCombatant, Helper.RandomFromList(LivingHeroes)));
         } else {
             actionUI.StartActionChoice();
         }
@@ -66,16 +66,16 @@ public class GameMaster : Singleton<GameMaster> {
         foreach (var a in action.actives) {
             //evaluate targets
             var targets = new List<Combatant>();
-            if (a.targettingType == TargettingType.enemy || a.targettingType == TargettingType.ally) {
+            if (a.targettingType == TargettingType.Enemy || a.targettingType == TargettingType.Friendly || a.targettingType == TargettingType.Adjacent) {
                 targets.Add(action.target);
-            } else if ((a.targettingType == TargettingType.allAllies && CurrentCombatant.isHero) || (a.targettingType == TargettingType.allEnemies && !CurrentCombatant.isHero)) {
+            } else if ((a.targettingType == TargettingType.AllFriendly && CurrentCombatant.isHero) || (a.targettingType == TargettingType.AllEnemies && !CurrentCombatant.isHero)) {
                 targets.AddRange(LivingHeroes);
-            } else if ((a.targettingType == TargettingType.allAllies && !CurrentCombatant.isHero) || (a.targettingType == TargettingType.allEnemies && CurrentCombatant.isHero)) {
+            } else if ((a.targettingType == TargettingType.AllFriendly && !CurrentCombatant.isHero) || (a.targettingType == TargettingType.AllEnemies && CurrentCombatant.isHero)) {
                 targets.AddRange(LivingEnemies);
             }
             foreach (var t in targets) {
                 // do the active
-                if (a.type == ActiveType.attack) {
+                if (a.type == ActiveType.dmg) {
                     t.TakeDamage(a.amount * CurrentCombatant.str);
                 } else if (a.type == ActiveType.heal) {
                     t.TakeDamage(-a.amount * CurrentCombatant.str);

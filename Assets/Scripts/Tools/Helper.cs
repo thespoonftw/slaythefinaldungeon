@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ public class Helper : Singleton<Helper> {
     public delegate void Action();
 
     public static T RandomFromList<T>(List<T> input) {
-        return input[Random.Range(0, input.Count)];
+        return input[UnityEngine.Random.Range(0, input.Count)];
     }
 
     private static IEnumerator WaitCoroutine(float timeInSeconds, Action action) {
@@ -26,6 +27,10 @@ public class Helper : Singleton<Helper> {
         if (data.Count < index) { return 0; }
         if (data[index] == null || data[index] == "") { return 0; }
         else { return int.Parse(data[index]); }
+    }
+
+    public static T ParseEnum<T>(string input) {
+        return (T)Enum.Parse(typeof(T), input);
     }
 
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class CsvLoader {
 
-    private static List<List<string>> LoadFile(string filename) {
+    public static List<List<string>> LoadFile(string filename) {
         var returner = new List<List<string>>();
         var filepath = Application.streamingAssetsPath + "/Data/" + filename + ".csv";
         var filedata = System.IO.File.ReadAllText(filepath);

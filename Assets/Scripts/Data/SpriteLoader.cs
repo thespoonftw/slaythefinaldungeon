@@ -22,6 +22,7 @@ public class SpriteLoader : MonoBehaviour {
         return dictionary;
     }
 
+    [Obsolete] // gets rid of the warning
     private IEnumerator LoadSprite(string path) {
         var backslash = new char[] { '\\' };
         var split1 = path.Split(backslash, StringSplitOptions.RemoveEmptyEntries)[1];

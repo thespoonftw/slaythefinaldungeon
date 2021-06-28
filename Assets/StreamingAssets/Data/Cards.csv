@@ -1,13 +1,13 @@
 ﻿id,name,description,cost,active
-1,Strengthen,become strengthened for this turn,1,strength-S-0
-2,Quick Breather,heal self,1,heal-S-4
-101,Whirlwind Slash,hit all enemies ,1,attack-E-4
-102,Heavy Blow,hit an enemy,2,attack-T-10
-103,Bolster,become shielded until next turn,0,shield-S-1
-201,Explosive Arrow,hit an enemy; hit all enemies,2,attack-T-4 attack-E-4
-202,Light Arrow,hit an enemy,0,attack-T-3
-203,Mark,target becomes vulnerable until next turn,1,vulnerable-T-1
-301,Blinding Spark,hit an enemy; target becomes weak until next turn,2,attack-T-6 weak-T-1
-302,Smokescreen,allies become shielded until next turn,1,shield-A-1
-303,Lay on Hands,heal target,1,heal-F-5
-304,Scorching Ray,hit an enemy; take some damage,1,attack-E-8 attack-S-3
+1,Strengthen,become strengthened for this turn,1,buff(str)-s-1
+2,Quick Breather,heal self,1,heal-s-4
+101,Whirlwind Slash,hit all enemies ,1,dmg-ae-4
+102,Heavy Blow,hit an enemy,2,dmg-e-10
+103,Bolster,become protected until next turn,0,buff(pro)-s-1
+201,Explosive Arrow,hit an enemy; hit all enemies,2,dmg-e-4 dmg-ae-4
+202,Light Arrow,hit an enemy,0,dmg-e-3
+203,Mark,target becomes vulnerable until next turn,1,buff(vul)-e-1
+301,Blinding Spark,hit an enemy; target becomes weak until next turn,2,dmg-e-6 buff(wea)-e-1
+302,Smokescreen,allies become protected until next turn,1,buff(pro)-aa-1
+303,Lay on Hands,heal ally,1,heal-a-5
+304,Scorching Ray,hit an enemy; take some damage,1,dmg-e-8 dmg-s-3

@@ -1,3 +1,3 @@
 ﻿id,name,sprite,HP,STR,resist,active
-1,goblin,1,30,3,3,attack-T-5
-2,skeleton,2,50,5,5,attack-T-5 weak-T-1
+1,goblin,1,30,3,3,dmg-e-5
+2,skeleton,2,50,5,5,dmg-e-5 buff(wea)-e-1

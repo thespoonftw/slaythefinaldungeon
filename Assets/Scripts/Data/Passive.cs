@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 public enum PassiveType {
     hp,
+    energy
 }
 
 public class Passive {

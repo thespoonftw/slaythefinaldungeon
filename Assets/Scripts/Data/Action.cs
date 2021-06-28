@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 public class ActionType {
 
     public List<Active> actives = new List<Active>();
-    public bool RequiresEnemyTarget => actives.Any(a => a.targettingType == TargettingType.enemy);
-    public bool RequiresAllyTarget => actives.Any(a => a.targettingType == TargettingType.ally);
+    public bool RequiresEnemyTarget => actives.Any(a => a.targettingType == TargettingType.Enemy);
+    public bool RequiresFriendlyTarget => actives.Any(a => a.targettingType == TargettingType.Friendly);
 
     public static ActionType LoadAction(string data) {
         if (data == null || data == "") { return null; }
-        var split = data.Split(';');
+        var split = data.Split(' ');
         var returner = new ActionType();
         foreach (var s in split) { returner.actives.Add(new Active(s)); }
         return returner;
@@ -31,16 +31,6 @@ public class Action : ActionType {
 
     public Combatant source;
     public Combatant target;
-
-    public static Action BasicAttack(int power, Combatant source, Combatant target) {
-        var returner = new Action();
-        returner.source = source;
-        returner.target = target;
-        returner.actives.Add(new Active(ActiveType.attack, TargettingType.enemy, power));
-        return returner;
-    }
-
-
 
 }
 
