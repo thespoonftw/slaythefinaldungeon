@@ -1,0 +1,6 @@
+﻿id,name,description,active,passive
+1,Sword,hit an enemy,attack(3),
+2,Shield,,,hp(10)
+3,Bow,hit an enemy,attack(5),
+4,Flame Wand,hit all enemies ,attackAll(2),hp(5)
+5,Holy Symbol,heal an ally,heal(5),

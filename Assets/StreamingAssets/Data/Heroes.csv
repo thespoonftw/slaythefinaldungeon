@@ -1,4 +1,4 @@
-﻿id,name,sprite,hp,str
-1,defender,1001,100,4
-2,juggler,1002,80,5
-3,priest,1003,70,3
+﻿id,name,sprite,hp,str,left,right
+1,defender,1001,100,4,1,2
+2,juggler,1002,80,5,3,
+3,priest,1003,70,3,4,5

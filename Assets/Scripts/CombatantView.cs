@@ -6,6 +6,7 @@ using UnityEngine;
 public class CombatantView : MonoBehaviour {
 
     [SerializeField] TextMeshPro text;
+    [SerializeField] TextMeshPro damage;
     [SerializeField] SpriteRenderer sprite;
 
     private bool isFlickerOn;
@@ -18,17 +19,19 @@ public class CombatantView : MonoBehaviour {
         sprite.sprite = Data.sprites[Model.spriteId];
         UpdateHealthText();
         Model.CurrentHp.OnUpdate += UpdateHealthText;
+        Model.CurrentHp.OnChange += HealthChange;
         Model.MaxHp.OnUpdate += UpdateHealthText;
         Model.Animation.OnNewValue += PlayAnimation;
     }
 
     public void OnDestroy() {
         Model.CurrentHp.OnUpdate -= UpdateHealthText;
+        Model.CurrentHp.OnChange -= HealthChange;
         Model.MaxHp.OnUpdate -= UpdateHealthText;
         Model.Animation.OnNewValue -= PlayAnimation;
     }
 
-    private void Update() {
+    private void FixedUpdate() {
         if (isFlickering) {
             isFlickerOn = !isFlickerOn;
             sprite.color = isFlickerOn ? Color.black : Color.white;
@@ -49,11 +52,25 @@ public class CombatantView : MonoBehaviour {
             
         } else if (animationIndex == 2) {
             isFlickering = true;
-            Helper.DelayMethod(0.5f, StopFlickering);
+            Helper.DelayMethod(0.75f, StopFlickering);
             
         } else if (animationIndex == 3) {
-            sprite.color = Color.black;
+            isFlickering = true;
+            Helper.DelayMethod(0.75f, StopFlickering);
+            Helper.DelayMethod(0.75f, () => sprite.color = Color.black);
         }
+    }
+
+    private void HealthChange(int before, int after) {        
+        if (after <= before) {
+            damage.color = Color.white;
+            damage.text = (before - after).ToString();
+        } else {
+            damage.color = Color.green;
+            damage.text = (after - before).ToString();
+        }
+        Helper.DelayMethod(0.75f, () => damage.text = "");
+
     }
 
     private void UpdateHealthText() {

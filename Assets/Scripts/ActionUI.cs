@@ -11,16 +11,24 @@ public class ActionUI : MonoBehaviour {
     [SerializeField] TextMeshProUGUI actionTwoText;
     [SerializeField] Image actionOneSelect;
     [SerializeField] Image actionTwoSelect;
-    [SerializeField] GameObject enemySelector;
+    [SerializeField] GameObject targetSelector;
     [SerializeField] GameObject activeHeroSelector;
 
     private bool isActionChoiceEnabled = false;
     private bool isTargetChoiceEnabled = false;
-    private int actionChoice = 0;
-    private int enemyChoice = 0;
+    private bool isLeftAction = true;
+    private int targetIndex = 0;
+    private bool isActionOneEnabled = false;
+    private bool isActionTwoEnabled = false;
+    private bool isTargettingEnemies = false;
     private GameMaster gameMaster;
 
-    private Combatant CurrentTarget => gameMaster.LivingEnemies[enemyChoice];
+    private List<Combatant> AvailableTargets => isTargettingEnemies ? gameMaster.LivingEnemies : gameMaster.LivingHeroes;
+    private Combatant CurrentTarget => AvailableTargets[targetIndex];
+    private Combatant CurrentCombatant => gameMaster.CurrentCombatant;
+    private Equipment LHequipment => CurrentCombatant.LHEquipment;
+    private Equipment RHequipment => CurrentCombatant.RHEquipment;
+
 
     private void Start() {
         gameMaster = GameMaster.Instance;
@@ -30,8 +38,8 @@ public class ActionUI : MonoBehaviour {
         Inputs.OnEnterKey += ConfirmTargetChoice;
         Inputs.OnUpDownArrow += SwitchTargetChoice;
         Inputs.OnEscKey += CancelTargetChoice;
-        actionOneText.enabled = false;
-        actionTwoText.enabled = false;
+        actionOneText.text = "";
+        actionTwoText.text = "";
         actionOneSelect.enabled = false;
         actionTwoSelect.enabled = false;
     }
@@ -47,72 +55,84 @@ public class ActionUI : MonoBehaviour {
 
     public void StartActionChoice() {
         isActionChoiceEnabled = true;
-        actionOneText.enabled = true;
-        actionTwoText.enabled = true;
+        SetEquipmentText(true);
+        SetEquipmentText(false);
         actionOneSelect.enabled = true;
         actionTwoSelect.enabled = false;
         activeHeroSelector.SetActive(true);
-        activeHeroSelector.transform.position = gameMaster.CurrentCharacter.transform.position;
-        actionChoice = 0;
+        activeHeroSelector.transform.position = gameMaster.CurrentCombatant.transform.position;
+        isLeftAction = true;
+    }
+
+    private void SetEquipmentText(bool isLeft) {
+        bool isAction = false;
+        var equipment = isLeft ? LHequipment : RHequipment;
+        var text = isLeft ? actionOneText : actionTwoText;
+        if (equipment == null) { 
+            text.text = ""; 
+        } else {
+            text.text = equipment.name;
+            isAction = equipment.actionType != null;
+            text.color = isAction ? Color.white : Color.gray;
+        }
+        if (isLeft) { isActionOneEnabled = isAction; } else { isActionTwoEnabled = isAction; }
     }
 
     private void SwitchActionChoice() {
         if (!isActionChoiceEnabled) { return; }
-        actionChoice = (actionChoice == 0) ? 1 : 0;
-        actionOneSelect.enabled = (actionChoice == 0);
-        actionTwoSelect.enabled = (actionChoice == 1);
+        if (!isActionOneEnabled || !isActionTwoEnabled) { return; }
+        isLeftAction = !isLeftAction;
+        actionOneSelect.enabled = isLeftAction;
+        actionTwoSelect.enabled = !isLeftAction;
     }
 
     private void ConfirmActionChoice() {
         if (!isActionChoiceEnabled) { return; }
         isActionChoiceEnabled = false;
-        actionOneText.enabled = false;
-        actionTwoText.enabled = false;
+        actionOneText.text = "";
+        actionTwoText.text = "";
         actionOneSelect.enabled = false;
         actionTwoSelect.enabled = false;
-        if (actionChoice == 0) {
-            Helper.DelayMethod(0.1f, StartTargetChoice);
+        var actionType = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
+        if (actionType.RequiresEnemyTarget) {
+            Helper.DelayMethod(0.1f, () => StartTargetChoice(true));
+        } else if (actionType.RequiresAllyTarget) {
+            Helper.DelayMethod(0.1f, () => StartTargetChoice(false));
         } else {
-            gameMaster.PerformAction(new Action() {
-                damage = -10,
-                source = gameMaster.CurrentCharacter,
-                target = gameMaster.CurrentCharacter
-            });
+            gameMaster.PerformAction(actionType.CreateAction(CurrentCombatant));
             activeHeroSelector.SetActive(false);
         }
     }
 
-    private void StartTargetChoice() {
-        enemyChoice = 0; // need to set this to first living enemy
+    private void StartTargetChoice(bool isTargettingEnemies) {
+        this.isTargettingEnemies = isTargettingEnemies;
+        targetIndex = 0; // need to set this to first living enemy
         isTargetChoiceEnabled = true;
-        enemySelector.SetActive(true);
-        enemySelector.transform.position = CurrentTarget.transform.position;
+        targetSelector.SetActive(true);
+        targetSelector.transform.position = CurrentTarget.transform.position;
     }
 
     private void SwitchTargetChoice(bool isUp) {
         if (!isTargetChoiceEnabled) { return; }
-        enemyChoice = isUp ? enemyChoice + 1 : enemyChoice - 1;
-        if (enemyChoice < 0) { enemyChoice += gameMaster.LivingEnemies.Count; }
-        if (enemyChoice >= gameMaster.LivingEnemies.Count) { enemyChoice -= gameMaster.LivingEnemies.Count; }
-        enemySelector.transform.position = CurrentTarget.transform.position;
+        targetIndex = isUp ? targetIndex + 1 : targetIndex - 1;
+        if (targetIndex < 0) { targetIndex += AvailableTargets.Count; }
+        if (targetIndex >= AvailableTargets.Count) { targetIndex -= AvailableTargets.Count; }
+        targetSelector.transform.position = CurrentTarget.transform.position;
     }
 
     private void CancelTargetChoice() { 
         if (!isTargetChoiceEnabled) { return; }
         isTargetChoiceEnabled = false;
-        enemySelector.SetActive(false);
+        targetSelector.SetActive(false);
         StartActionChoice();
     }
 
     private void ConfirmTargetChoice() { 
         if (!isTargetChoiceEnabled) { return; }
         isTargetChoiceEnabled = false;
-        enemySelector.SetActive(false);
-        gameMaster.PerformAction(new Action() {
-            damage = gameMaster.CurrentCharacter.str,
-            source = gameMaster.CurrentCharacter,
-            target = CurrentTarget
-        });
+        targetSelector.SetActive(false);
+        var actionType = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
+        gameMaster.PerformAction(actionType.CreateAction(CurrentCombatant, CurrentTarget));
         activeHeroSelector.SetActive(false);
     }
 

@@ -13,13 +13,12 @@ public class GameMaster : Singleton<GameMaster> {
     [SerializeField] ActionUI actionUI;
 
     private List<Combatant> turnOrder;
-    private List<HeroData> activeHeroes;
     private int turnIndex = 0;
     private int encounterIndex = 1;
     
     public bool IsVictorious => LivingEnemies.Count == 0;
     public bool IsDefeat => LivingHeroes.Count == 0;
-    public Combatant CurrentCharacter => turnOrder[turnIndex];
+    public Combatant CurrentCombatant => turnOrder[turnIndex];
     public List<Combatant> LivingHeroes => turnOrder.Where(e => e.IsAlive && e.isHero).ToList();
     public List<Combatant> LivingEnemies => turnOrder.Where(e => e.IsAlive && !e.isHero).ToList();
     public List<Combatant> Heroes => turnOrder.Where(e => e.isHero).ToList();
@@ -27,19 +26,21 @@ public class GameMaster : Singleton<GameMaster> {
     void Start() {
         var inputs = Inputs.Instance; // to initialise the inputs system
         gameObject.AddComponent<Data>().LoadData();
-        activeHeroes = new List<HeroData>() { Data.heroes[1], Data.heroes[2], Data.heroes[3] };
+        foreach (var h in Data.heroes.Values) {
+            if (h.leftHandEquipmentId != 0) { Data.equipment[h.leftHandEquipmentId].passives.ForEach(p => ApplyPassive(h, p)); }
+            if (h.rightHandEquipmentId != 0) { Data.equipment[h.rightHandEquipmentId].passives.ForEach(p => ApplyPassive(h, p)); }
+        }
         SetupEncounter();
     }
 
     private void SetupEncounter() {
         turnIndex = -1;
         turnOrder = new List<Combatant>();
-        turnOrder.Add(CreateHero(heroSpots[0], activeHeroes[0]));
-        turnOrder.Add(CreateHero(heroSpots[1], activeHeroes[1]));
-        turnOrder.Add(CreateHero(heroSpots[2], activeHeroes[2]));
+        turnOrder.Add(CreateHero(heroSpots[0], Data.heroes[1]));
+        turnOrder.Add(CreateHero(heroSpots[1], Data.heroes[2]));
+        turnOrder.Add(CreateHero(heroSpots[2], Data.heroes[3]));
         var encounter = Data.encounters[encounterIndex];
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             if (encounter.enemies[i] == 0) { continue; }
             turnOrder.Add(CreateEnemy(enemySpots[i], Data.enemies[encounter.enemies[i]]));
         }
@@ -47,35 +48,49 @@ public class GameMaster : Singleton<GameMaster> {
     }
 
     private void StartNextTurn() {
-        if (IsVictorious) { BattleWon(); return; }
+        if (IsVictorious) { Helper.DelayMethod(1f, BattleWon); return; }
         if (IsDefeat) { GameOver(); return; }
 
         turnIndex++;
         if (turnIndex == turnOrder.Count) { turnIndex = 0; }
-        if (!CurrentCharacter.IsAlive) { StartNextTurn(); return; }
+        if (!CurrentCombatant.IsAlive) { StartNextTurn(); return; }
 
-        if (!CurrentCharacter.isHero) {
-            ChooseEnemyAction();
+        if (!CurrentCombatant.isHero) {
+            PerformAction(Action.BasicAttack(2, CurrentCombatant, Helper.RandomFromList(LivingHeroes)));
         } else {
             actionUI.StartActionChoice();
         }
     }
 
-    private void ChooseEnemyAction() {
-        var action = new Action() {
-            source = CurrentCharacter,
-            damage = CurrentCharacter.str,
-            target = Helper.RandomFromList(LivingHeroes)
-        };
-        PerformAction(action);
+    public void PerformAction(Action action) {
+        foreach (var a in action.actives) {
+            //evaluate targets
+            var targets = new List<Combatant>();
+            if (a.targettingType == TargettingType.enemy || a.targettingType == TargettingType.ally) {
+                targets.Add(action.target);
+            } else if ((a.targettingType == TargettingType.allAllies && CurrentCombatant.isHero) || (a.targettingType == TargettingType.allEnemies && !CurrentCombatant.isHero)) {
+                targets.AddRange(LivingHeroes);
+            } else if ((a.targettingType == TargettingType.allAllies && !CurrentCombatant.isHero) || (a.targettingType == TargettingType.allEnemies && CurrentCombatant.isHero)) {
+                targets.AddRange(LivingEnemies);
+            }
+            foreach (var t in targets) {
+                // do the active
+                if (a.type == ActiveType.attack) {
+                    t.TakeDamage(a.amount * CurrentCombatant.str);
+                } else if (a.type == ActiveType.heal) {
+                    t.TakeDamage(-a.amount * CurrentCombatant.str);
+                }
+            }
+            action.source.Animation.Value = 1;
+            Helper.DelayMethod(1f, StartNextTurn);
+        }
     }
 
-    public void PerformAction(Action action) {
-        if (action.target != null) {
-            action.target.TakeDamage(action.damage);
+    public void ApplyPassive(HeroData heroData, Passive passive) {
+        if (passive.type == PassiveType.hp) {
+            heroData.bonusHp += passive.amount;
+            heroData.currentHp += passive.amount;
         }
-        action.source.Animation.Value = 1;
-        Helper.DelayMethod(1f, StartNextTurn);
     }
 
     private Combatant CreateHero(GameObject spawnPoint, HeroData data) {

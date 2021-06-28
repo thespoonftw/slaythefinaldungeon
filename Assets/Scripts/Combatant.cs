@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Combatant : MonoBehaviour {
 
-    private HeroData heroData;
+    public HeroData heroData;
 
     public int str;
     public int spriteId;
@@ -14,17 +14,21 @@ public class Combatant : MonoBehaviour {
     public EProperty<int> MaxHp = new EProperty<int>();
     public EProperty<int> CurrentHp = new EProperty<int>();
     public EProperty<int> Animation = new EProperty<int>(); // 1=attack, 2=damaged, 3=dead
-    public bool IsAlive => CurrentHp.Value > 0;    
+    public bool IsAlive => CurrentHp.Value > 0;
+    public Equipment LHEquipment => heroData.leftHandEquipmentId != 0 ? Data.equipment[heroData.leftHandEquipmentId] : null;
+    public Equipment RHEquipment => heroData.rightHandEquipmentId != 0 ? Data.equipment[heroData.rightHandEquipmentId] : null;
 
     public void Init(CharacterData data) {
         isHero = (data is HeroData);
         if (data is HeroData) {
             heroData = (HeroData)data;
             CurrentHp.Value = heroData.currentHp;
+            MaxHp.Value = data.maxHp + heroData.bonusHp;
         } else {
             CurrentHp.Value = data.maxHp;
+            MaxHp.Value = data.maxHp;
         }
-        MaxHp.Value = data.maxHp;    
+        
         str = data.str;
         spriteId = data.sprite;
         GetComponent<CombatantView>().Init();
