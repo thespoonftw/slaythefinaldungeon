@@ -1,6 +1,6 @@
-﻿id,name,description,active,passive
-1,Sword,hit an enemy,attack(3),
-2,Shield,,,hp(10)
-3,Bow,hit an enemy,attack(5),
-4,Flame Wand,hit all enemies ,attackAll(2),hp(5)
-5,Holy Symbol,heal an ally,heal(5),
+﻿id,name,description,cost,active,passive
+1,Sword,hit an enemy,1,attack-T-5,
+2,Shield,,1,,hp-20
+3,Bow,hit an enemy,1,attack-T-7,
+4,Flame Wand,hit an enemy,1,attack-T-4,energy-1
+5,Holy Symbol,heal an ally,1,heal-H-5,
