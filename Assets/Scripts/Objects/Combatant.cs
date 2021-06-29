@@ -26,19 +26,19 @@ public class Combatant {
     public Combatant(CombatantView view, Hero hero) {
         this.view = view;
         this.hero = hero;
-        view.Init();
         CurrentHp.Value = hero.currentHp;
         spriteId = hero.spriteId;
         LoadStats(hero.stats);
+        view.Init(this);
     }
 
     public Combatant(CombatantView view, EnemyData enemyData) {
         this.view = view;
         this.enemyData = enemyData;
-        view.Init();
         CurrentHp.Value = enemyData.stats.maxHp;
         spriteId = enemyData.sprite;
         LoadStats(new Stats(enemyData));
+        view.Init(this);
     }
 
     private void LoadStats(Stats stats) {
@@ -62,7 +62,7 @@ public class Combatant {
     }
 
     public void ApplyBuff(Buff buff) {
-        var existingBuff = buffs.First(a => a.data.type == buff.data.type);
+        var existingBuff = buffs.FirstOrDefault(a => a.data.type == buff.data.type);
         if (existingBuff != null) {
             existingBuff.durationRemaining = Mathf.Max(existingBuff.durationRemaining, buff.durationRemaining);
 

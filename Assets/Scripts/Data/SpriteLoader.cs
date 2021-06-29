@@ -12,6 +12,7 @@ public class SpriteLoader : MonoBehaviour {
     private Dictionary<int, Sprite> dictionary;
 
     public Dictionary<int, Sprite> Load() {
+        Debug.Log("Attempting to load Sprites ...");
         dictionary = new Dictionary<int, Sprite>();
         var path = Application.streamingAssetsPath + "/Sprites";
         var files = Directory.GetFiles(path);

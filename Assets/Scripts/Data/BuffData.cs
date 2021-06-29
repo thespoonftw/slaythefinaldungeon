@@ -27,17 +27,6 @@ public class BuffData {
         name = data[1];
         description = data[2];
     }
-
-    public static Dictionary<BuffType, BuffData> Load(string filename) {
-        var returner = new Dictionary<BuffType, BuffData>();
-        var data = CsvLoader.LoadFile(filename);
-        foreach (var h in data) {
-            var value = new BuffData(h);
-            BuffType key = (BuffType)Enum.Parse(typeof(BuffType), h[0]);
-            returner.Add(key, value);
-        }
-        return returner;
-    }
 }
 
 

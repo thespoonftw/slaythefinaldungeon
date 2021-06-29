@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 public class EquipmentData {
 
-    public int id;
+    public int id;  
     public string name;
     public string description;
+    public int energyCost;
     public ActionData actionType;
     public List<Passive> passives;
 
@@ -16,8 +17,8 @@ public class EquipmentData {
         id = Helper.ParseDataInt(data, 0);
         name = data[1];
         description = data[2];
-        actionType = ActionData.LoadAction(data[3]);
-        passives = Passive.LoadPassives(data[4]);
+        actionType = ActionData.LoadAction(Helper.ParseDataInt(data, 3), data[4]);
+        passives = Passive.LoadPassives(data[5]);
     }
 }
 

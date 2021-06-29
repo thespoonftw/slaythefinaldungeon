@@ -15,9 +15,9 @@ public class Passive {
     public int amount;
 
     public Passive(string data) {
-        var split = data.Split('(');
+        var split = data.Split('-');
         type = (PassiveType)Enum.Parse(typeof(PassiveType), split[0]);
-        amount = int.Parse(split[1].Substring(0, split[1].Length - 1));
+        amount = int.Parse(split[1]);
     }
 
     public static List<Passive> LoadPassives(string data) {

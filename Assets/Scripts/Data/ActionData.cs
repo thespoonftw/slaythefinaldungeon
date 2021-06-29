@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 public class ActionData {
 
+    public int energyCost;
     public List<Active> actives = new List<Active>();
     public bool RequiresEnemyTarget => actives.Any(a => a.targettingType == TargettingType.Enemy);
     public bool RequiresFriendlyTarget => actives.Any(a => a.targettingType == TargettingType.Friendly);
 
-    public static ActionData LoadAction(string data) {
+    public static ActionData LoadAction(int energyCost, string data) {
         if (data == null || data == "") { return null; }
         var split = data.Split(' ');
         var returner = new ActionData();

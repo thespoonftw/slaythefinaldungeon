@@ -28,8 +28,8 @@ public class GameMaster : Singleton<GameMaster> {
         var inputs = Inputs.Instance; // to initialise the inputs system
         gameObject.AddComponent<Data>().LoadData();
 
-
         foreach (var data in Data.heroes.Values) {
+            if (data == null) { continue; }
             var hero = new Hero(data);
             heroes.Add(hero);
             if (hero.lhEquipment != null) { hero.lhEquipment.passives.ForEach(p => EquipmentStats(hero, p)); }
@@ -49,17 +49,13 @@ public class GameMaster : Singleton<GameMaster> {
             if (encounter.enemies[i] == 0) { continue; }
             turnOrder.Add(CreateEnemy(enemySpots[i], Data.enemies[encounter.enemies[i]]));
         }
-        Helper.DelayMethod(1f, StartNextTurn);
+        Helper.DelayMethod(1f, StartTurn);
     }
 
-    private void StartNextTurn() {
-        if (IsVictorious) { Helper.DelayMethod(1f, BattleWon); return; }
-        if (IsDefeat) { GameOver(); return; }
-
-        CurrentCombatant.EndOfTurnBuffs();
+    private void StartTurn() {     
         turnIndex++;
         if (turnIndex == turnOrder.Count) { turnIndex = 0; }
-        if (!CurrentCombatant.IsAlive) { StartNextTurn(); return; }
+        if (!CurrentCombatant.IsAlive) { StartTurn(); return; }
 
         CurrentCombatant.StartOfTurnBuffs();
         if (!CurrentCombatant.IsHero) {
@@ -67,6 +63,13 @@ public class GameMaster : Singleton<GameMaster> {
         } else {
             actionUI.StartActionChoice();
         }
+    }
+
+    private void EndTurn() {
+        if (IsVictorious) { Helper.DelayMethod(1f, BattleWon); return; }
+        if (IsDefeat) { GameOver(); return; }
+        CurrentCombatant.EndOfTurnBuffs();
+        StartTurn();
     }
 
     public void PerformAction(ActionData data, Combatant source, Combatant target = null) {
@@ -83,7 +86,7 @@ public class GameMaster : Singleton<GameMaster> {
             foreach (var t in targets) {
                 // do the active
                 if (a.type == ActiveType.dmg) {
-                    t.TakeDamage(a.amount * Mathf.RoundToInt(CurrentCombatant.str / t.resist));
+                    t.TakeDamage(Mathf.RoundToInt(a.amount * ((float)CurrentCombatant.str / t.resist)));
                 } else if (a.type == ActiveType.heal) {
                     t.TakeDamage(-a.amount);
                 } else if (a.type == ActiveType.buff) {
@@ -91,7 +94,7 @@ public class GameMaster : Singleton<GameMaster> {
                 }
             }
             source.Animation.Value = 1;
-            Helper.DelayMethod(1f, StartNextTurn);
+            Helper.DelayMethod(1f, EndTurn);
         }
     }
 

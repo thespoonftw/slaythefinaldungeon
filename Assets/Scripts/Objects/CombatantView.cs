@@ -11,24 +11,23 @@ public class CombatantView : MonoBehaviour {
 
     private bool isFlickerOn;
     private bool isFlickering;
+    private Combatant model;
 
-    public Combatant Model { get; set; }
-
-    public void Init() {
-        Model = GetComponent<Combatant>();
-        sprite.sprite = Data.sprites[Model.spriteId];
+    public void Init(Combatant model) {
+        this.model = model;
+        sprite.sprite = Data.sprites[this.model.spriteId];
         UpdateHealthText();
-        Model.CurrentHp.OnUpdate += UpdateHealthText;
-        Model.CurrentHp.OnChange += HealthChange;
-        Model.MaxHp.OnUpdate += UpdateHealthText;
-        Model.Animation.OnNewValue += PlayAnimation;
+        this.model.CurrentHp.OnUpdate += UpdateHealthText;
+        this.model.CurrentHp.OnChange += HealthChange;
+        this.model.MaxHp.OnUpdate += UpdateHealthText;
+        this.model.Animation.OnNewValue += PlayAnimation;
     }
 
     public void OnDestroy() {
-        Model.CurrentHp.OnUpdate -= UpdateHealthText;
-        Model.CurrentHp.OnChange -= HealthChange;
-        Model.MaxHp.OnUpdate -= UpdateHealthText;
-        Model.Animation.OnNewValue -= PlayAnimation;
+        model.CurrentHp.OnUpdate -= UpdateHealthText;
+        model.CurrentHp.OnChange -= HealthChange;
+        model.MaxHp.OnUpdate -= UpdateHealthText;
+        model.Animation.OnNewValue -= PlayAnimation;
     }
 
     private void FixedUpdate() {
@@ -46,7 +45,7 @@ public class CombatantView : MonoBehaviour {
 
     private void PlayAnimation(int animationIndex) {
         if (animationIndex == 1) {
-            var offset = Model.IsHero ? 0.5f : -0.5f;
+            var offset = model.IsHero ? 0.5f : -0.5f;
             sprite.transform.localPosition = new Vector3(offset, 0, 0);
             Helper.DelayMethod(0.25f, () => sprite.transform.localPosition = new Vector3(0, 0, 0) );
             
@@ -74,7 +73,7 @@ public class CombatantView : MonoBehaviour {
     }
 
     private void UpdateHealthText() {
-        text.text = Model.CurrentHp.Value > 0 ? Model.CurrentHp.Value + " / " + Model.MaxHp.Value : ""; 
+        text.text = model.CurrentHp.Value > 0 ? model.CurrentHp.Value + " / " + model.MaxHp.Value : ""; 
     }
 
 

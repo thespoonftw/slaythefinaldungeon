@@ -17,8 +17,9 @@ public class Data : MonoBehaviour {
         enemies = CsvLoader.LoadAsType<EnemyData>("Enemies");
         encounters = CsvLoader.LoadAsType<EncounterData>("Encounters");
         equipment = CsvLoader.LoadAsType<EquipmentData>("Equipment");
-        buffs = BuffData.Load("Buffs");
+        buffs = CsvLoader.LoadBuffs("Buffs");
         cards = CsvLoader.LoadAsType<CardData>("Cards");
         sprites = gameObject.AddComponent<SpriteLoader>().Load();
+        Debug.Log("Streaming Assets fully loaded");
     }
 }

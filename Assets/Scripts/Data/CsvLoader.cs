@@ -19,11 +19,25 @@ public class CsvLoader {
         return returner;
     }
     public static Dictionary<int, T> LoadAsType<T>(string filename) {
+        Debug.Log("Attempting to load " + filename + " ...");
         var returner = new Dictionary<int, T>();
         var data = LoadFile(filename);
         foreach (var h in data) {
             var value = (T)Activator.CreateInstance(typeof(T), h);
             var key = int.Parse(h[0]);
+            returner.Add(key, value);
+        }
+        returner.Add(0, default);
+        return returner;
+    }
+
+    public static Dictionary<BuffType, BuffData> LoadBuffs(string filename) {
+        Debug.Log("Attempting to load " + filename + " ...");
+        var returner = new Dictionary<BuffType, BuffData>();
+        var data = CsvLoader.LoadFile(filename);
+        foreach (var h in data) {
+            var value = new BuffData(h);
+            BuffType key = (BuffType)Enum.Parse(typeof(BuffType), h[0]);
             returner.Add(key, value);
         }
         return returner;

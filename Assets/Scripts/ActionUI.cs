@@ -93,6 +93,7 @@ public class ActionUI : MonoBehaviour {
         actionTwoText.text = "";
         actionOneSelect.enabled = false;
         actionTwoSelect.enabled = false;
+
         var actionData = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
         if (actionData.RequiresEnemyTarget) {
             Helper.DelayMethod(0.1f, () => StartTargetChoice(true));

@@ -46,7 +46,7 @@ public class EnemyData : CharacterData {
             Helper.ParseDataInt(data, 4),
             Helper.ParseDataInt(data, 5)
         );
-        action = ActionData.LoadAction(data[6]);
+        action = ActionData.LoadAction(0, data[6]);
     }
 }
 
