@@ -26,8 +26,8 @@ public class ActionUI : MonoBehaviour {
     private List<Combatant> AvailableTargets => isTargettingEnemies ? gameMaster.LivingEnemies : gameMaster.LivingHeroes;
     private Combatant CurrentTarget => AvailableTargets[targetIndex];
     private Combatant CurrentCombatant => gameMaster.CurrentCombatant;
-    private Equipment LHequipment => CurrentCombatant.LHEquipment;
-    private Equipment RHequipment => CurrentCombatant.RHEquipment;
+    private EquipmentData LHequipment => CurrentCombatant.hero.lhEquipment;
+    private EquipmentData RHequipment => CurrentCombatant.hero.rhEquipment;
 
 
     private void Start() {
@@ -60,7 +60,7 @@ public class ActionUI : MonoBehaviour {
         actionOneSelect.enabled = true;
         actionTwoSelect.enabled = false;
         activeHeroSelector.SetActive(true);
-        activeHeroSelector.transform.position = gameMaster.CurrentCombatant.transform.position;
+        activeHeroSelector.transform.position = gameMaster.CurrentCombatant.GameObject.transform.position;
         isLeftAction = true;
     }
 
@@ -93,13 +93,13 @@ public class ActionUI : MonoBehaviour {
         actionTwoText.text = "";
         actionOneSelect.enabled = false;
         actionTwoSelect.enabled = false;
-        var actionType = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
-        if (actionType.RequiresEnemyTarget) {
+        var actionData = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
+        if (actionData.RequiresEnemyTarget) {
             Helper.DelayMethod(0.1f, () => StartTargetChoice(true));
-        } else if (actionType.RequiresFriendlyTarget) {
+        } else if (actionData.RequiresFriendlyTarget) {
             Helper.DelayMethod(0.1f, () => StartTargetChoice(false));
         } else {
-            gameMaster.PerformAction(actionType.CreateAction(CurrentCombatant));
+            gameMaster.PerformAction(actionData, CurrentCombatant);
             activeHeroSelector.SetActive(false);
         }
     }
@@ -109,7 +109,7 @@ public class ActionUI : MonoBehaviour {
         targetIndex = 0; // need to set this to first living enemy
         isTargetChoiceEnabled = true;
         targetSelector.SetActive(true);
-        targetSelector.transform.position = CurrentTarget.transform.position;
+        targetSelector.transform.position = CurrentTarget.GameObject.transform.position;
     }
 
     private void SwitchTargetChoice(bool isUp) {
@@ -117,7 +117,7 @@ public class ActionUI : MonoBehaviour {
         targetIndex = isUp ? targetIndex + 1 : targetIndex - 1;
         if (targetIndex < 0) { targetIndex += AvailableTargets.Count; }
         if (targetIndex >= AvailableTargets.Count) { targetIndex -= AvailableTargets.Count; }
-        targetSelector.transform.position = CurrentTarget.transform.position;
+        targetSelector.transform.position = CurrentTarget.GameObject.transform.position;
     }
 
     private void CancelTargetChoice() { 
@@ -131,8 +131,8 @@ public class ActionUI : MonoBehaviour {
         if (!isTargetChoiceEnabled) { return; }
         isTargetChoiceEnabled = false;
         targetSelector.SetActive(false);
-        var actionType = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
-        gameMaster.PerformAction(actionType.CreateAction(CurrentCombatant, CurrentTarget));
+        var actionData = isLeftAction ? LHequipment.actionType : RHequipment.actionType;
+        gameMaster.PerformAction(actionData, CurrentCombatant, CurrentTarget);
         activeHeroSelector.SetActive(false);
     }
 

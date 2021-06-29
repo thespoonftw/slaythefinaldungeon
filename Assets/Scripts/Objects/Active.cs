@@ -25,7 +25,7 @@ public class Active {
     public ActiveType type;
     public int amount;
     public TargettingType targettingType;
-    public Buff buff;
+    public BuffType buff;
 
     public Active(ActiveType type, TargettingType targettingType, int amount) {
         this.type = type;
@@ -46,7 +46,7 @@ public class Active {
             case "buff":
                 type = ActiveType.buff;
                 var buffcode = splitFirst[1].Substring(0, splitFirst[1].Length - 1);
-                buff = Data.buffs[Helper.ParseEnum<BuffType>(buffcode)];
+                buff = Helper.ParseEnum<BuffType>(buffcode);
                 break;
 
         }

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class Encounter {
+public class EncounterData {
 
     public int id;
     public int[] enemies = new int[4];
 
-    public Encounter(List<string> data) {
+    public EncounterData(List<string> data) {
         id = Helper.ParseDataInt(data, 0);
         enemies[0] = Helper.ParseDataInt(data, 1);
         enemies[1] = Helper.ParseDataInt(data, 2);

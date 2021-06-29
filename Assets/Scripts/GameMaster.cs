@@ -12,6 +12,7 @@ public class GameMaster : Singleton<GameMaster> {
     [SerializeField] TextMeshProUGUI centreText;
     [SerializeField] ActionUI actionUI;
 
+    private List<Hero> heroes = new List<Hero>();
     private List<Combatant> turnOrder;
     private int turnIndex = 0;
     private int encounterIndex = 1;
@@ -19,16 +20,20 @@ public class GameMaster : Singleton<GameMaster> {
     public bool IsVictorious => LivingEnemies.Count == 0;
     public bool IsDefeat => LivingHeroes.Count == 0;
     public Combatant CurrentCombatant => turnOrder[turnIndex];
-    public List<Combatant> LivingHeroes => turnOrder.Where(e => e.IsAlive && e.isHero).ToList();
-    public List<Combatant> LivingEnemies => turnOrder.Where(e => e.IsAlive && !e.isHero).ToList();
-    public List<Combatant> Heroes => turnOrder.Where(e => e.isHero).ToList();
+    public List<Combatant> LivingHeroes => turnOrder.Where(e => e.IsAlive && e.IsHero).ToList();
+    public List<Combatant> LivingEnemies => turnOrder.Where(e => e.IsAlive && !e.IsHero).ToList();
+    public List<Combatant> CombatantHeroes => turnOrder.Where(e => e.IsHero).ToList();
 
     void Start() {
         var inputs = Inputs.Instance; // to initialise the inputs system
         gameObject.AddComponent<Data>().LoadData();
-        foreach (var h in Data.heroes.Values) {
-            if (h.leftHandEquipmentId != 0) { Data.equipment[h.leftHandEquipmentId].passives.ForEach(p => ApplyPassive(h, p)); }
-            if (h.rightHandEquipmentId != 0) { Data.equipment[h.rightHandEquipmentId].passives.ForEach(p => ApplyPassive(h, p)); }
+
+
+        foreach (var data in Data.heroes.Values) {
+            var hero = new Hero(data);
+            heroes.Add(hero);
+            if (hero.lhEquipment != null) { hero.lhEquipment.passives.ForEach(p => EquipmentStats(hero, p)); }
+            if (hero.rhEquipment != null) { hero.rhEquipment.passives.ForEach(p => EquipmentStats(hero, p)); }
         }
         SetupEncounter();
     }
@@ -36,9 +41,9 @@ public class GameMaster : Singleton<GameMaster> {
     private void SetupEncounter() {
         turnIndex = -1;
         turnOrder = new List<Combatant>();
-        turnOrder.Add(CreateHero(heroSpots[0], Data.heroes[1]));
-        turnOrder.Add(CreateHero(heroSpots[1], Data.heroes[2]));
-        turnOrder.Add(CreateHero(heroSpots[2], Data.heroes[3]));
+        turnOrder.Add(CreateHero(heroSpots[0], heroes[0]));
+        turnOrder.Add(CreateHero(heroSpots[1], heroes[1]));
+        turnOrder.Add(CreateHero(heroSpots[2], heroes[2]));
         var encounter = Data.encounters[encounterIndex];
         for (int i = 0; i < 4; i++) {
             if (encounter.enemies[i] == 0) { continue; }
@@ -51,68 +56,70 @@ public class GameMaster : Singleton<GameMaster> {
         if (IsVictorious) { Helper.DelayMethod(1f, BattleWon); return; }
         if (IsDefeat) { GameOver(); return; }
 
+        CurrentCombatant.EndOfTurnBuffs();
         turnIndex++;
         if (turnIndex == turnOrder.Count) { turnIndex = 0; }
         if (!CurrentCombatant.IsAlive) { StartNextTurn(); return; }
 
-        if (!CurrentCombatant.isHero) {
-            //PerformAction(Action.BasicAttack(2, CurrentCombatant, Helper.RandomFromList(LivingHeroes)));
+        CurrentCombatant.StartOfTurnBuffs();
+        if (!CurrentCombatant.IsHero) {
+            PerformAction(CurrentCombatant.enemyData.action, CurrentCombatant, Helper.RandomFromList(LivingHeroes));
         } else {
             actionUI.StartActionChoice();
         }
     }
 
-    public void PerformAction(Action action) {
-        foreach (var a in action.actives) {
+    public void PerformAction(ActionData data, Combatant source, Combatant target = null) {
+        foreach (var a in data.actives) {
             //evaluate targets
             var targets = new List<Combatant>();
             if (a.targettingType == TargettingType.Enemy || a.targettingType == TargettingType.Friendly || a.targettingType == TargettingType.Adjacent) {
-                targets.Add(action.target);
-            } else if ((a.targettingType == TargettingType.AllFriendly && CurrentCombatant.isHero) || (a.targettingType == TargettingType.AllEnemies && !CurrentCombatant.isHero)) {
+                targets.Add(target);
+            } else if ((a.targettingType == TargettingType.AllFriendly && CurrentCombatant.IsHero) || (a.targettingType == TargettingType.AllEnemies && !CurrentCombatant.IsHero)) {
                 targets.AddRange(LivingHeroes);
-            } else if ((a.targettingType == TargettingType.AllFriendly && !CurrentCombatant.isHero) || (a.targettingType == TargettingType.AllEnemies && CurrentCombatant.isHero)) {
+            } else if ((a.targettingType == TargettingType.AllFriendly && !CurrentCombatant.IsHero) || (a.targettingType == TargettingType.AllEnemies && CurrentCombatant.IsHero)) {
                 targets.AddRange(LivingEnemies);
             }
             foreach (var t in targets) {
                 // do the active
                 if (a.type == ActiveType.dmg) {
-                    t.TakeDamage(a.amount * CurrentCombatant.str);
+                    t.TakeDamage(a.amount * Mathf.RoundToInt(CurrentCombatant.str / t.resist));
                 } else if (a.type == ActiveType.heal) {
-                    t.TakeDamage(-a.amount * CurrentCombatant.str);
+                    t.TakeDamage(-a.amount);
+                } else if (a.type == ActiveType.buff) {
+                    t.ApplyBuff(new Buff(source, target, a.amount, Data.buffs[a.buff]));
                 }
             }
-            action.source.Animation.Value = 1;
+            source.Animation.Value = 1;
             Helper.DelayMethod(1f, StartNextTurn);
         }
     }
 
-    public void ApplyPassive(HeroData heroData, Passive passive) {
+    public void EquipmentStats(Hero hero, Passive passive) {
         if (passive.type == PassiveType.hp) {
-            heroData.bonusHp += passive.amount;
-            heroData.currentHp += passive.amount;
+            hero.stats.maxHp += passive.amount;
+            hero.currentHp += passive.amount;
         }
     }
 
-    private Combatant CreateHero(GameObject spawnPoint, HeroData data) {
+    private Combatant CreateHero(GameObject spawnPoint, Hero data) {
         var go = Instantiate(characterPrefab, spawnPoint.transform.position, Quaternion.identity, spawnPoint.transform);
-        var character = go.GetComponent<Combatant>();
-        character.Init(data);
-        return character;
+        var view = go.GetComponent<CombatantView>();
+        return new Combatant(view, data);
     }
 
     private Combatant CreateEnemy(GameObject spawnPoint, EnemyData data) {
         var go = Instantiate(characterPrefab, spawnPoint.transform.position, Quaternion.identity, spawnPoint.transform);
-        var character = go.GetComponent<Combatant>();
-        character.Init(data);
-        return character;
+        var view = go.GetComponent<CombatantView>();
+        return new Combatant(view, data);
     }
 
     private void BattleWon() {
         centreText.text = "Battle Won";
         encounterIndex++;
         if (Data.encounters.ContainsKey(encounterIndex)) {
-            foreach (var h in Heroes) { h.SaveHeroData(); }
-            foreach (var c in turnOrder) { Destroy(c.gameObject); }
+            foreach (var h in CombatantHeroes) { h.SaveHero(); }
+            foreach (var c in turnOrder) { Destroy(c.GameObject); }
             Helper.DelayMethod(2f, SetupEncounter);
             Helper.DelayMethod(2f, () => centreText.text = "");
         } else {

@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class Equipment {
+public class CardData {
 
     public int id;
     public string name;
     public string description;
-    public ActionType actionType;
-    public List<Passive> passives;
+    public int cost;
+    public ActionData active;
 
-    public Equipment(List<string> data) {
+    public CardData(List<string> data) {
         id = Helper.ParseDataInt(data, 0);
         name = data[1];
         description = data[2];
-        actionType = ActionType.LoadAction(data[3]);
-        passives = Passive.LoadPassives(data[4]);
+        cost = Helper.ParseDataInt(data, 3);
+        active = ActionData.LoadAction(data[4]);
     }
 }
 

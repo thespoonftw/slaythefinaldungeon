@@ -46,7 +46,7 @@ public class CombatantView : MonoBehaviour {
 
     private void PlayAnimation(int animationIndex) {
         if (animationIndex == 1) {
-            var offset = Model.isHero ? 0.5f : -0.5f;
+            var offset = Model.IsHero ? 0.5f : -0.5f;
             sprite.transform.localPosition = new Vector3(offset, 0, 0);
             Helper.DelayMethod(0.25f, () => sprite.transform.localPosition = new Vector3(0, 0, 0) );
             
