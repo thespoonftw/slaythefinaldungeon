@@ -22,7 +22,7 @@ public class Combatant {
     public bool IsAlive => CurrentHp.Value > 0;
     public bool IsHero => (hero != null);
     public GameObject GameObject => view.gameObject;
-    public List<Buff> buffs = new List<Buff>();
+    public EList<Buff> Buffs = new EList<Buff>();
 
     public Combatant(CombatantView view, Hero hero) {
         this.view = view;
@@ -63,12 +63,12 @@ public class Combatant {
     }
 
     public void ApplyBuff(Buff buff) {
-        var existingBuff = buffs.FirstOrDefault(a => a.data.type == buff.data.type);
+        var existingBuff = Buffs.List.FirstOrDefault(a => a.data.type == buff.data.type);
         if (existingBuff != null) {
             existingBuff.durationRemaining = Mathf.Max(existingBuff.durationRemaining, buff.durationRemaining);
 
         } else {
-            buffs.Add(buff);
+            Buffs.Add(buff);
             switch (buff.data.type) {
                 case BuffType.pro: resist += Mathf.RoundToInt(baseStats.resist * BuffData.PRO_MOD); break;
                 case BuffType.vul: resist -= Mathf.RoundToInt(baseStats.resist * BuffData.VUL_MOD); break;
@@ -80,7 +80,7 @@ public class Combatant {
     }
 
     private void RemoveBuff(Buff buff) {
-        buffs.Remove(buff);
+        Buffs.Remove(buff);
 
         switch (buff.data.type) {
             case BuffType.pro: resist -= Mathf.RoundToInt(baseStats.resist * BuffData.PRO_MOD); break;
@@ -91,15 +91,15 @@ public class Combatant {
     }
 
     public void StartOfTurnBuffs() { 
-        foreach (var b in buffs.ToArray()) {
+        foreach (var b in Buffs.List) {
             b.durationRemaining--;
-            if (b.durationRemaining <= 0) { RemoveBuff(b); }
+            if (b.durationRemaining < 0) { RemoveBuff(b); }
         }
     }
 
     public void EndOfTurnBuffs() {
-        foreach (var b in buffs.ToArray()) {
-            if (b.durationRemaining <= 0) { RemoveBuff(b); }
+        foreach (var b in Buffs.List) {
+            if (b.durationRemaining < 0) { RemoveBuff(b); }
         }
     }
     

@@ -8,10 +8,13 @@ public class CombatantView : MonoBehaviour {
     [SerializeField] TextMeshPro text;
     [SerializeField] TextMeshPro damage;
     [SerializeField] SpriteRenderer sprite;
+    [SerializeField] List<GameObject> buffSlots;
+    [SerializeField] GameObject buffPrefab;
 
     private bool isFlickerOn;
     private bool isFlickering;
     private Combatant model;
+    private List<GameObject> buffs = new List<GameObject>();
 
     public void Init(Combatant model) {
         this.model = model;
@@ -21,6 +24,7 @@ public class CombatantView : MonoBehaviour {
         this.model.CurrentHp.OnChange += HealthChange;
         this.model.MaxHp.OnUpdate += UpdateHealthText;
         this.model.Animation.OnNewValue += PlayAnimation;
+        this.model.Buffs.OnNewValue += UpdateBuffs;
     }
 
     public void OnDestroy() {
@@ -28,6 +32,7 @@ public class CombatantView : MonoBehaviour {
         model.CurrentHp.OnChange -= HealthChange;
         model.MaxHp.OnUpdate -= UpdateHealthText;
         model.Animation.OnNewValue -= PlayAnimation;
+        model.Buffs.OnNewValue -= UpdateBuffs;
     }
 
     private void FixedUpdate() {
@@ -74,6 +79,17 @@ public class CombatantView : MonoBehaviour {
 
     private void UpdateHealthText() {
         text.text = model.CurrentHp.Value > 0 ? model.CurrentHp.Value + " / " + model.MaxHp.Value : ""; 
+    }
+
+    private void UpdateBuffs(List<Buff> list) {
+        foreach (var go in buffs) {
+            Destroy(go);
+        }
+        for (int i=0; i<list.Count; i++) {
+            var go = Instantiate(buffPrefab, buffSlots[i].transform.position, Quaternion.identity, buffSlots[i].transform);
+            buffs.Add(go);
+            go.GetComponent<BuffView>().SetSprite(list[i].data.sprite);
+        }
     }
 
 

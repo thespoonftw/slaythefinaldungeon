@@ -21,11 +21,13 @@ public class BuffData {
     public BuffType type;
     public string name;
     public string description;
+    public int sprite;
 
     public BuffData(List<string> data) {
         type = (BuffType)Enum.Parse(typeof(BuffType), data[0]);
         name = data[1];
         description = data[2];
+        sprite = Helper.ParseDataInt(data, 3);
     }
 }
 

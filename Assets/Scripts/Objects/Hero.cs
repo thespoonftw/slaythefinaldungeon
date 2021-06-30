@@ -22,6 +22,7 @@ public class Hero {
         stats = new Stats(data);
         currentHp = stats.maxHp;
         deck = data.startingDeck.Select(a => Data.cards[a]).ToList();
+        level = 1;
     }
 }
 

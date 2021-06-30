@@ -93,9 +93,9 @@ public class GameMaster : Singleton<GameMaster> {
                     t.ApplyBuff(new Buff(source, target, a.amount, Data.buffs[a.buff]));
                 }
             }
-            source.Animation.Value = 1;
-            Helper.DelayMethod(1f, EndTurn);
         }
+        source.Animation.Value = 1;
+        Helper.DelayMethod(1f, EndTurn);
     }
 
     public void EquipmentStats(Hero hero, Passive passive) {
