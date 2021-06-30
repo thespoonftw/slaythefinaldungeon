@@ -86,7 +86,7 @@ public class GameMaster : Singleton<GameMaster> {
             foreach (var t in targets) {
                 // do the active
                 if (a.type == ActiveType.dmg) {
-                    t.TakeDamage(Mathf.RoundToInt(a.amount * ((float)CurrentCombatant.str / t.resist)));
+                    t.TakeDamage(Mathf.RoundToInt(a.amount * (CurrentCombatant.str * Mathf.Sqrt(CurrentCombatant.CombatLevel) / t.resist)));
                 } else if (a.type == ActiveType.heal) {
                     t.TakeDamage(-a.amount);
                 } else if (a.type == ActiveType.buff) {

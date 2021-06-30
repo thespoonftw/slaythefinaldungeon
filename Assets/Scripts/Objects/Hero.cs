@@ -9,6 +9,7 @@ public class Hero {
 
     public int currentHp;
     public int spriteId;
+    public int level;
     public Stats stats;
     public EquipmentData lhEquipment;
     public EquipmentData rhEquipment;

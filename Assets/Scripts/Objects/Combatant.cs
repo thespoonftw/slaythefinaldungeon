@@ -15,6 +15,7 @@ public class Combatant {
     public Hero hero;
     public EnemyData enemyData;
 
+    public int CombatLevel => IsHero ? hero.level : Mathf.FloorToInt(enemyData.stats.str / 3f);
     public EProperty<int> MaxHp = new EProperty<int>();
     public EProperty<int> CurrentHp = new EProperty<int>();
     public EProperty<int> Animation = new EProperty<int>(); // 1=attack, 2=damaged, 3=dead
