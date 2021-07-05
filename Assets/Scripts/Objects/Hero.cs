@@ -10,6 +10,7 @@ public class Hero {
     public int currentHp;
     public int spriteId;
     public int level;
+    public int energy;
     public Stats stats;
     public EquipmentData lhEquipment;
     public EquipmentData rhEquipment;
@@ -23,6 +24,7 @@ public class Hero {
         currentHp = stats.maxHp;
         deck = data.startingDeck.Select(a => Data.cards[a]).ToList();
         level = 1;
+        energy = 3;
     }
 }
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class Helper : Singleton<Helper> {
+public class Tools : Singleton<Tools> {
 
     public delegate void Action();
 

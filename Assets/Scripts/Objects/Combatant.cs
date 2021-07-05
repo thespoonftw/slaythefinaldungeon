@@ -12,29 +12,22 @@ public class Combatant {
     public Stats baseStats;
     
     public CombatantView view;
-    public Hero hero;
     public EnemyData enemyData;
 
-    public int CombatLevel => IsHero ? hero.level : Mathf.FloorToInt(enemyData.stats.str / 3f);
+    public bool isHero = false;
+
+    public virtual int CombatLevel => Mathf.FloorToInt(enemyData.stats.str / 3f);
     public EProperty<int> MaxHp = new EProperty<int>();
     public EProperty<int> CurrentHp = new EProperty<int>();
     public EProperty<int> Animation = new EProperty<int>(); // 1=attack, 2=damaged, 3=dead
     public bool IsAlive => CurrentHp.Value > 0;
-    public bool IsHero => (hero != null);
+
     public GameObject GameObject => view.gameObject;
     public EList<Buff> Buffs = new EList<Buff>();
 
-    public Combatant(CombatantView view, Hero hero) {
-        this.view = view;
-        this.hero = hero;
-        CurrentHp.Value = hero.currentHp;
-        spriteId = hero.spriteId;
-        LoadStats(hero.stats);
-        view.Init(this);
-    }
-
     public Combatant(CombatantView view, EnemyData enemyData) {
         this.view = view;
+        if (enemyData == null) { return; }
         this.enemyData = enemyData;
         CurrentHp.Value = enemyData.stats.maxHp;
         spriteId = enemyData.sprite;
@@ -47,10 +40,6 @@ public class Combatant {
         MaxHp.Value = stats.maxHp;
         str = stats.str;
         resist = stats.resist;
-    }
-
-    public void SaveHero() {
-        hero.currentHp = CurrentHp.Value;
     }
 
     public void TakeDamage(int amount) {
@@ -92,14 +81,19 @@ public class Combatant {
 
     public void StartOfTurnBuffs() { 
         foreach (var b in Buffs.List) {
-            b.durationRemaining--;
-            if (b.durationRemaining < 0) { RemoveBuff(b); }
+            if (b.data.isStartOfTurn) {
+                b.durationRemaining--;
+                if (b.durationRemaining <= 0) { RemoveBuff(b); }
+            }
         }
     }
 
     public void EndOfTurnBuffs() {
         foreach (var b in Buffs.List) {
-            if (b.durationRemaining < 0) { RemoveBuff(b); }
+            if (!b.data.isStartOfTurn) {
+                b.durationRemaining--;
+                if (b.durationRemaining <= 0) { RemoveBuff(b); }
+            }
         }
     }
     

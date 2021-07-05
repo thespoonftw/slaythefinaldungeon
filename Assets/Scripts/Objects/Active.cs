@@ -8,6 +8,7 @@ public enum ActiveType {
     dmg,
     heal,
     buff,
+    wait,
 }
 
 public enum TargettingType { 
@@ -18,6 +19,7 @@ public enum TargettingType {
     AllAdjacent,   
     Friendly,
     AllFriendly,
+    RandomEnemy,
 }
 
 public class Active {
@@ -43,10 +45,12 @@ public class Active {
                 type = ActiveType.dmg; break;
             case "heal":
                 type = ActiveType.heal; break;
+            case "wait":
+                type = ActiveType.wait; break;
             case "buff":
                 type = ActiveType.buff;
                 var buffcode = splitFirst[1].Substring(0, splitFirst[1].Length - 1);
-                buff = Helper.ParseEnum<BuffType>(buffcode);
+                buff = Tools.ParseEnum<BuffType>(buffcode);
                 break;
 
         }
@@ -66,6 +70,8 @@ public class Active {
                 targettingType = TargettingType.Friendly; break;
             case "af":
                 targettingType = TargettingType.AllFriendly; break;
+            case "re":
+                targettingType = TargettingType.RandomEnemy; break;
 
         }
 

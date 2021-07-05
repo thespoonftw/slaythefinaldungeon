@@ -22,12 +22,14 @@ public class BuffData {
     public string name;
     public string description;
     public int sprite;
+    public bool isStartOfTurn;
 
     public BuffData(List<string> data) {
         type = (BuffType)Enum.Parse(typeof(BuffType), data[0]);
         name = data[1];
         description = data[2];
-        sprite = Helper.ParseDataInt(data, 3);
+        sprite = Tools.ParseDataInt(data, 3);
+        isStartOfTurn = data[4] == "start";
     }
 }
 

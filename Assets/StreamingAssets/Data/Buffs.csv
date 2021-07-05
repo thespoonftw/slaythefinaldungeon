@@ -1,5 +1,5 @@
-﻿code,name,description,sprite
-str,Strengthened,Power increased by 50%,2001
-wea,Weakened,Power decreased by 33%,2002
-pro,Protected,Resistance increased by 50%,2003
-vul,Vulnerable,Resistance decreased by 33%,2004
+﻿code,name,description,sprite,start or end
+str,Strengthened,Power increased by 50%,2001,end
+wea,Weakened,Power decreased by 33%,2002,end
+pro,Protected,Resistance increased by 50%,2003,start
+vul,Vulnerable,Resistance decreased by 33%,2004,start

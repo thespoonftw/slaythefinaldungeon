@@ -9,15 +9,14 @@ public class EquipmentData {
     public int id;  
     public string name;
     public string description;
-    public int energyCost;
     public ActionData actionType;
     public List<Passive> passives;
 
     public EquipmentData(List<string> data) {
-        id = Helper.ParseDataInt(data, 0);
+        id = Tools.ParseDataInt(data, 0);
         name = data[1];
         description = data[2];
-        actionType = ActionData.LoadAction(Helper.ParseDataInt(data, 3), data[4]);
+        actionType = ActionData.LoadAction(Tools.ParseDataInt(data, 3), data[4], name, description);
         passives = Passive.LoadPassives(data[5]);
     }
 }

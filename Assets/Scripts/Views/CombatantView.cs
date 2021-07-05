@@ -50,18 +50,18 @@ public class CombatantView : MonoBehaviour {
 
     private void PlayAnimation(int animationIndex) {
         if (animationIndex == 1) {
-            var offset = model.IsHero ? 0.5f : -0.5f;
+            var offset = model.isHero ? 0.5f : -0.5f;
             sprite.transform.localPosition = new Vector3(offset, 0, 0);
-            Helper.DelayMethod(0.25f, () => sprite.transform.localPosition = new Vector3(0, 0, 0) );
+            Tools.DelayMethod(0.25f, () => sprite.transform.localPosition = new Vector3(0, 0, 0) );
             
         } else if (animationIndex == 2) {
             isFlickering = true;
-            Helper.DelayMethod(0.75f, StopFlickering);
+            Tools.DelayMethod(0.75f, StopFlickering);
             
         } else if (animationIndex == 3) {
             isFlickering = true;
-            Helper.DelayMethod(0.75f, StopFlickering);
-            Helper.DelayMethod(0.75f, () => sprite.color = Color.black);
+            Tools.DelayMethod(0.75f, StopFlickering);
+            Tools.DelayMethod(0.75f, () => sprite.color = Color.black);
         }
     }
 
@@ -73,7 +73,7 @@ public class CombatantView : MonoBehaviour {
             damage.color = Color.green;
             damage.text = (after - before).ToString();
         }
-        Helper.DelayMethod(0.75f, () => damage.text = "");
+        Tools.DelayMethod(0.75f, () => damage.text = "");
 
     }
 
@@ -88,7 +88,7 @@ public class CombatantView : MonoBehaviour {
         for (int i=0; i<list.Count; i++) {
             var go = Instantiate(buffPrefab, buffSlots[i].transform.position, Quaternion.identity, buffSlots[i].transform);
             buffs.Add(go);
-            go.GetComponent<BuffView>().SetSprite(list[i].data.sprite);
+            go.GetComponent<BuffView>().Init(list[i]);
         }
     }
 

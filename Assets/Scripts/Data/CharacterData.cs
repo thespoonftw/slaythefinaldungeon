@@ -20,16 +20,16 @@ public class HeroData : CharacterData {
     public List<int> startingDeck;
 
     public HeroData(List<string> data) {
-        id = Helper.ParseDataInt(data, 0);
+        id = Tools.ParseDataInt(data, 0);
         name = data[1];
-        sprite = Helper.ParseDataInt(data, 2);
+        sprite = Tools.ParseDataInt(data, 2);
         stats = new Stats(
-            Helper.ParseDataInt(data, 3),
-            Helper.ParseDataInt(data, 4),
-            Helper.ParseDataInt(data, 5)
+            Tools.ParseDataInt(data, 3),
+            Tools.ParseDataInt(data, 4),
+            Tools.ParseDataInt(data, 5)
         );
-        startingLHEquipment = Helper.ParseDataInt(data, 6);
-        startingRHEquipment = Helper.ParseDataInt(data, 7);
+        startingLHEquipment = Tools.ParseDataInt(data, 6);
+        startingRHEquipment = Tools.ParseDataInt(data, 7);
         startingDeck = data[8].Split(' ').Select(int.Parse).ToList();
     }
 }
@@ -38,15 +38,15 @@ public class EnemyData : CharacterData {
     public ActionData action;
 
     public EnemyData(List<string> data) {
-        id = Helper.ParseDataInt(data, 0);
+        id = Tools.ParseDataInt(data, 0);
         name = data[1];
-        sprite = Helper.ParseDataInt(data, 2);
+        sprite = Tools.ParseDataInt(data, 2);
         stats = new Stats(
-            Helper.ParseDataInt(data, 3),
-            Helper.ParseDataInt(data, 4),
-            Helper.ParseDataInt(data, 5)
+            Tools.ParseDataInt(data, 3),
+            Tools.ParseDataInt(data, 4),
+            Tools.ParseDataInt(data, 5)
         );
-        action = ActionData.LoadAction(0, data[6]);
+        action = ActionData.LoadAction(0, data[6], "attack");
     }
 }
 
