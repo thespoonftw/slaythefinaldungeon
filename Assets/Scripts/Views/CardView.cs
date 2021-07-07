@@ -9,6 +9,9 @@ public class CardView : MonoBehaviour {
     [SerializeField] TextMeshProUGUI text;
 
     private ActionData action;
+    private bool isHeld;
+    private float yOfNoReturn = 100;
+    private Vector3 originalPosition;
 
     public void SetContent(ActionData action) {
         this.action = action;
@@ -23,12 +26,23 @@ public class CardView : MonoBehaviour {
         }
     }
 
-    public void EventMouseDown() {
+    private void Update() {
+        if (!isHeld) { return; }        
+        transform.position = Input.mousePosition;
+    }
 
+    public void EventMouseDown() {
+        isHeld = true;
+        originalPosition = transform.position;
     }
 
     public void EventMouseUp() {
-        CombatUI.Instance.StartAction(this, action);
+        isHeld = false;
+        if (transform.position.y > 100) {
+            CombatUI.Instance.StartAction(this, action);
+        } else {
+            transform.position = originalPosition;
+        }
     }
 
     public void EventMouseEnter() {
