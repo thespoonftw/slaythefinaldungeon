@@ -92,6 +92,14 @@ public class CombatantView : MonoBehaviour {
         }
     }
 
+    private void OnMouseEnter() {
+        CombatUI.Instance.TargetCombatant(model);
+    }
+
+    private void OnMouseExit() {
+        CombatUI.Instance.TargetCombatant(null);
+    }
+
 
 
 }

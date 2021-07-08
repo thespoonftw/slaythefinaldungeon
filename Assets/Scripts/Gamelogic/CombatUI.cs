@@ -19,46 +19,56 @@ public class CombatUI : Singleton<CombatUI> {
     [SerializeField] GameObject endTurnButton;
     [SerializeField] GameObject energyImage;
     [SerializeField] GameObject tooltip;
+    [SerializeField] LineRenderer cardAimerLine;
+    [SerializeField] GameObject validTarget;
+    [SerializeField] GameObject invalidTarget;
 
-    private bool isTargetting = false;
-    private int targetIndex = 0;
     private CombatMaster combatMaster;
-    private ActionData currentAction;
     private CardView currentCard;
-    private List<Combatant> availableTargets;
+    private bool isHoldingCard = false;
+    private bool isAimingCard = false;
+    private Combatant currentTarget;
 
     private EProperty<int> energyRemaining = new EProperty<int>();
     private EProperty<int> energyMax = new EProperty<int>();
 
-
-    private Combatant CurrentTarget => availableTargets[targetIndex];
     private CombatantHero CurrentHero => combatMaster.CurrentCombatant.isHero ? (CombatantHero)combatMaster.CurrentCombatant : null;
-    private EquipmentData LHequipment => CurrentHero.hero.lhEquipment;
-    private EquipmentData RHequipment => CurrentHero.hero.rhEquipment;
 
 
     private void Start() {
         combatMaster = CombatMaster.Instance;
-        Inputs.OnEnterKey += ConfirmTargetChoice;
-        Inputs.OnUpDownArrow += SwitchTargetChoice;
-        Inputs.OnEscKey += CancelTargetChoice;
+        Inputs.OnLeftMouseUp += OnLeftMouseUp;
         energyRemaining.OnUpdate += UpdateEnergyRemaining;
         energyMax.OnUpdate += UpdateEnergyRemaining;
         DisableUI();
     }
 
     private void OnDestroy() {
-        Inputs.OnUpDownArrow -= SwitchTargetChoice;
-        Inputs.OnEnterKey -= ConfirmTargetChoice;
-        Inputs.OnEscKey -= CancelTargetChoice;
+        Inputs.OnLeftMouseUp -= OnLeftMouseUp;
         energyRemaining.OnUpdate -= UpdateEnergyRemaining;
         energyMax.OnUpdate += UpdateEnergyRemaining;
     }
 
+    private void Update() {
+        if (currentCard != null && isHoldingCard) {
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = -1;
+            currentCard.transform.position = pos;
+        }        
+        if (currentCard != null && isAimingCard) {
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = -1;
+            cardAimerLine.SetPosition(0, currentCard.transform.position);
+            cardAimerLine.SetPosition(1, pos);
+        }
+    }
+
     public void StartTurn() {
         CurrentHero.DrawHand(3);
-        if (LHequipment != null && LHequipment.actionType != null) { lhEquipmentCard.SetContent(LHequipment.actionType); }
-        if (RHequipment != null && RHequipment.actionType != null) { rhEquipmentCard.SetContent(RHequipment.actionType); }
+        var lh = CurrentHero.hero.lhEquipment;
+        var rh = CurrentHero.hero.rhEquipment;
+        if (lh != null && lh.actionType != null) { lhEquipmentCard.SetContent(lh.actionType); }
+        if (rh != null && rh.actionType != null) { rhEquipmentCard.SetContent(rh.actionType); }
         card1.SetContent(CurrentHero.hand[0].active);
         card2.SetContent(CurrentHero.hand[1].active);
         card3.SetContent(CurrentHero.hand[2].active);
@@ -69,61 +79,6 @@ public class CombatUI : Singleton<CombatUI> {
         energyRemaining.Value = CurrentHero.hero.energy;
         energyMax.Value = CurrentHero.hero.energy;
         activeHeroSelector.transform.position = combatMaster.CurrentCombatant.GameObject.transform.position;
-    }
-
-    public void StartAction(CardView cardview, ActionData actionData) {
-        if (energyRemaining.Value - actionData.energyCost < 0) { return; }
-        if (isTargetting) { return; }
-
-        if (actionData.targettingMode != ActionTargettingMode.noTarget) {
-            StartTargetChoice(cardview, actionData);
-        } else {
-            combatMaster.PerformAction(actionData, CurrentHero);
-            energyRemaining.Value -= actionData.energyCost;
-            cardview.SetContent(null);
-        }
-    }
-
-    private void StartTargetChoice(CardView cardview, ActionData actionData) {
-        currentCard = cardview;
-        currentAction = actionData;
-        if (actionData.targettingMode == ActionTargettingMode.enemy) {
-            availableTargets = combatMaster.LivingMonsters;
-        } else if (actionData.targettingMode == ActionTargettingMode.friendly) {
-            availableTargets = combatMaster.LivingHeroes;
-        } else if (actionData.targettingMode == ActionTargettingMode.adjacent) {
-            availableTargets = combatMaster.LivingHeroes;
-            availableTargets.Remove(CurrentHero);
-        }
-        targetIndex = 0;
-        isTargetting = true;
-        targetSelector.SetActive(true);
-        targetSelector.transform.position = CurrentTarget.GameObject.transform.position;
-
-    }
-
-    private void SwitchTargetChoice(bool isUp) {
-        if (!isTargetting) { return; }
-        targetIndex = isUp ? targetIndex + 1 : targetIndex - 1;
-        if (targetIndex < 0) { targetIndex += availableTargets.Count; }
-        if (targetIndex >= availableTargets.Count) { targetIndex -= availableTargets.Count; }
-        targetSelector.transform.position = CurrentTarget.GameObject.transform.position;
-    }
-
-    private void CancelTargetChoice() { 
-        if (!isTargetting) { return; }
-        isTargetting = false;
-        targetSelector.SetActive(false);
-        StartTurn();
-    }
-
-    private void ConfirmTargetChoice() { 
-        if (!isTargetting) { return; }
-        currentCard.SetContent(null);
-        isTargetting = false;
-        targetSelector.SetActive(false);
-        combatMaster.PerformAction(currentAction, CurrentHero, CurrentTarget);
-        energyRemaining.Value -= currentAction.energyCost;        
     }
 
     public void EndTurnClicked() {
@@ -148,12 +103,79 @@ public class CombatUI : Singleton<CombatUI> {
         energy.text = energyRemaining.Value + " / " + energyMax.Value;
     }
 
-    public void ShowTooltip(string text) {
-        if (text != null) {
+    public void TryPickupCard(CardView card) {
+        if (card.action.energyCost <= energyRemaining.Value) {
+            SetTooltip(null);
+            currentCard = card;
+            if (card.action.targettingMode == ActionTargettingMode.noTarget) {
+                isHoldingCard = true;
+            } else {
+                isAimingCard = true;
+                cardAimerLine.enabled = true;
+            }
+            
+        }
+        
+    }
+
+    private void OnLeftMouseUp() {
+        if (currentCard != null) {    
+            
+            if (isHoldingCard) {
+                currentCard.transform.position = currentCard.originalPosition;
+                if (Input.mousePosition.y > 100) {
+                    combatMaster.PerformAction(currentCard.action, CurrentHero);
+                    energyRemaining.Value -= currentCard.action.energyCost;
+                    currentCard.SetContent(null);
+                }
+            }
+
+            if (isAimingCard) {
+                if (currentTarget != null) {
+                    combatMaster.PerformAction(currentCard.action, CurrentHero, currentTarget);
+                    energyRemaining.Value -= currentCard.action.energyCost;
+                    currentCard.SetContent(null);
+                }
+            }
+            cardAimerLine.enabled = false;
+            currentCard = null;
+            isHoldingCard = false;
+            isAimingCard = false;
+            currentTarget = null;
+            validTarget.SetActive(false);
+            invalidTarget.SetActive(false);
+        }
+        
+    }
+
+    public void TargetCombatant(Combatant combatant) {
+        if (!isAimingCard) { return; }
+        if (combatant != null) {            
+            if ((currentCard.action.targettingMode == ActionTargettingMode.enemy && combatMaster.LivingMonsters.Contains(combatant)) ||
+                (currentCard.action.targettingMode == ActionTargettingMode.friendly && combatMaster.LivingHeroes.Contains(combatant)) ||
+                (currentCard.action.targettingMode == ActionTargettingMode.adjacent && combatMaster.LivingHeroes.Contains(combatant) && combatant != CurrentHero)
+                ) {
+                validTarget.SetActive(true);
+                validTarget.transform.position = combatant.GameObject.transform.position + new Vector3(0, 0, -1);
+                currentTarget = combatant;
+            } else {
+                invalidTarget.SetActive(true);
+                invalidTarget.transform.position = combatant.GameObject.transform.position + new Vector3(0, 0, -1);
+            }
+        } else {
+            validTarget.SetActive(false);
+            invalidTarget.SetActive(false);
+            currentTarget = null;
+        }
+    }
+
+
+    public void SetTooltip(string text) {
+        if (text == null || currentCard != null) {
+            tooltip.SetActive(false);
+        } else {
             tooltip.GetComponentInChildren<TextMeshProUGUI>().text = text;
             tooltip.SetActive(true);
-        } else {
-            tooltip.SetActive(false);
         }
     }
 

@@ -15,10 +15,10 @@ public class BuffView : MonoBehaviour {
     }
 
     private void OnMouseEnter() {
-        CombatUI.Instance.ShowTooltip(buff.data.description);
+        CombatUI.Instance.SetTooltip(buff.data.description);
     }
 
     private void OnMouseExit() {
-        CombatUI.Instance.ShowTooltip(null);
+        CombatUI.Instance.SetTooltip(null);
     }
 }

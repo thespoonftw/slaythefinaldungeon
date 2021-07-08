@@ -17,6 +17,7 @@ public class Inputs : Singleton<Inputs> {
     public static event ActionBool OnUpDownArrow;
     public static event Action OnEnterKey;
     public static event Action OnEscKey;
+    public static event Action OnLeftMouseUp;
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.LeftArrow)) { OnLeftArrow?.Invoke(); }
@@ -25,6 +26,7 @@ public class Inputs : Singleton<Inputs> {
         if (Input.GetKeyDown(KeyCode.DownArrow)) { OnDownArrow?.Invoke(); OnUpDownArrow?.Invoke(false); }
         if (Input.GetKeyDown(KeyCode.Return)) { OnEnterKey?.Invoke(); }
         if (Input.GetKeyDown(KeyCode.Escape)) { OnEscKey?.Invoke(); }
+        if (Input.GetMouseButtonUp(0)) { OnLeftMouseUp?.Invoke(); }
     }
 
 }
