@@ -9,7 +9,9 @@ public class Combatant {
     public int str;
     public int resist;
     public int spriteId;
+    public float speedFactor;
     public Stats baseStats;
+    public string name;
     
     public CombatantView view;
     public EnemyData enemyData;
@@ -25,9 +27,10 @@ public class Combatant {
     public GameObject GameObject => view.gameObject;
     public EList<Buff> Buffs = new EList<Buff>();
 
-    public Combatant(CombatantView view, EnemyData enemyData) {
+    public Combatant(CombatantView view, EnemyData enemyData, int index) {
         this.view = view;
         if (enemyData == null) { return; }
+        name = enemyData.name + " " + index;
         this.enemyData = enemyData;
         CurrentHp.Value = enemyData.stats.maxHp;
         spriteId = enemyData.sprite;
@@ -35,11 +38,12 @@ public class Combatant {
         view.Init(this);
     }
 
-    private void LoadStats(Stats stats) {
+    protected void LoadStats(Stats stats) {
         baseStats = stats.Clone();
         MaxHp.Value = stats.maxHp;
         str = stats.str;
         resist = stats.resist;
+        speedFactor = 1f / stats.speed;
     }
 
     public void TakeDamage(int amount) {
@@ -48,7 +52,13 @@ public class Combatant {
         } else {
             CurrentHp.Value -= amount;
         }
-        Animation.Value = CurrentHp.Value > 0 ? 2 : 3; // play dead if health is below zero
+
+        if (CurrentHp.Value <= 0) {
+            Animation.Value = 3;
+            TurnCalculator.Instance.KillCombatant(this);
+        } else {
+            Animation.Value = 2;
+        }
     }
 
     public void ApplyBuff(Buff buff) {

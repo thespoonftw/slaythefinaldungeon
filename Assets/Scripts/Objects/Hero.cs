@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class Hero {
 
+    public string name;
     public int currentHp;
     public int spriteId;
     public int level;
@@ -17,6 +18,7 @@ public class Hero {
     public List<CardData> deck;
 
     public Hero(HeroData data) {
+        name = data.name;
         lhEquipment = Data.equipment[data.startingLHEquipment];
         rhEquipment = Data.equipment[data.startingRHEquipment];
         spriteId = data.sprite;

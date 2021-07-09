@@ -26,11 +26,12 @@ public class HeroData : CharacterData {
         stats = new Stats(
             Tools.ParseDataInt(data, 3),
             Tools.ParseDataInt(data, 4),
-            Tools.ParseDataInt(data, 5)
+            Tools.ParseDataInt(data, 5),
+            Tools.ParseDataInt(data, 6)
         );
-        startingLHEquipment = Tools.ParseDataInt(data, 6);
-        startingRHEquipment = Tools.ParseDataInt(data, 7);
-        startingDeck = data[8].Split(' ').Select(int.Parse).ToList();
+        startingLHEquipment = Tools.ParseDataInt(data, 7);
+        startingRHEquipment = Tools.ParseDataInt(data, 8);
+        startingDeck = data[9].Split(' ').Select(int.Parse).ToList();
     }
 }
 public class EnemyData : CharacterData {
@@ -44,9 +45,10 @@ public class EnemyData : CharacterData {
         stats = new Stats(
             Tools.ParseDataInt(data, 3),
             Tools.ParseDataInt(data, 4),
-            Tools.ParseDataInt(data, 5)
+            Tools.ParseDataInt(data, 5),
+            Tools.ParseDataInt(data, 6)
         );
-        action = ActionData.LoadAction(0, data[6], "attack");
+        action = ActionData.LoadAction(0, data[7], "attack");
     }
 }
 

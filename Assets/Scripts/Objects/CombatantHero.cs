@@ -14,21 +14,15 @@ public class CombatantHero : Combatant {
     public List<CardData> discardPile = new List<CardData>();
     public List<CardData> hand = new List<CardData>();
 
-    public CombatantHero(CombatantView view, Hero hero) : base(view, null) {
+    public CombatantHero(CombatantView view, Hero hero) : base(view, null, 0) {
         this.hero = hero;
+        name = hero.name;
         drawDeck = new List<CardData>(hero.deck);
         CurrentHp.Value = hero.currentHp;
         spriteId = hero.spriteId;
         LoadStats(hero.stats);
         view.Init(this);
         isHero = true;
-    }
-
-    private void LoadStats(Stats stats) {
-        baseStats = stats.Clone();
-        MaxHp.Value = stats.maxHp;
-        str = stats.str;
-        resist = stats.resist;
     }
 
     public void SaveHero() {

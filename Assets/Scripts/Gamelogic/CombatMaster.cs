@@ -10,36 +10,31 @@ public class CombatMaster : Singleton<CombatMaster> {
     [SerializeField] List<GameObject> enemySpots;
     [SerializeField] GameObject characterPrefab;
 
-    private List<Combatant> turnOrder;
-    private int turnIndex = 0;
-    
     public bool IsVictorious => LivingMonsters.Count == 0;
     public bool IsDefeat => LivingHeroes.Count == 0;
-    public Combatant CurrentCombatant => turnOrder[turnIndex];
-    public List<Combatant> LivingHeroes => turnOrder.Where(e => e.IsAlive && e.isHero).ToList();
-    public List<Combatant> LivingMonsters => turnOrder.Where(e => e.IsAlive && !e.isHero).ToList();
-    public List<CombatantHero> CombatantHeroes => turnOrder.Where(e => e.isHero).Cast<CombatantHero>().ToList();
+    public List<Combatant> Combatants { get; set; }
+    public List<Combatant> LivingHeroes => Combatants.Where(e => e.IsAlive && e.isHero).ToList();
+    public List<Combatant> LivingMonsters => Combatants.Where(e => e.IsAlive && !e.isHero).ToList();
+    public List<CombatantHero> CombatantHeroes => Combatants.Where(e => e.isHero).Cast<CombatantHero>().ToList();
+    public Combatant CurrentCombatant { get; set; }
 
     public void Setup(int encounterIndex) {
-        var heroes = GameMaster.Instance.heroes;
-        turnIndex = -1;
-        turnOrder = new List<Combatant>();
-        turnOrder.Add(CreateHero(heroSpots[0], heroes[0]));
-        turnOrder.Add(CreateHero(heroSpots[1], heroes[1]));
-        turnOrder.Add(CreateHero(heroSpots[2], heroes[2]));
+        var heroes = GameMaster.Instance.heroes;        
+        Combatants = new List<Combatant>();
+        Combatants.Add(CreateHero(heroSpots[0], heroes[0]));
+        Combatants.Add(CreateHero(heroSpots[1], heroes[1]));
+        Combatants.Add(CreateHero(heroSpots[2], heroes[2]));
         var encounter = Data.encounters[encounterIndex];
         for (int i = 0; i < 4; i++) {
             if (encounter.enemies[i] == 0) { continue; }
-            turnOrder.Add(CreateEnemy(enemySpots[i], Data.enemies[encounter.enemies[i]]));
+            Combatants.Add(CreateEnemy(enemySpots[i], Data.enemies[encounter.enemies[i]], i+1));
         }
+        TurnCalculator.Instance.Init();
         Tools.DelayMethod(1f, StartTurn);
     }
 
-    private void StartTurn() {     
-        turnIndex++;
-        if (turnIndex == turnOrder.Count) { turnIndex = 0; }
-        if (!CurrentCombatant.IsAlive) { StartTurn(); return; }
-
+    private void StartTurn() {
+        CurrentCombatant = TurnCalculator.Instance.TakeTurn();
         CurrentCombatant.StartOfTurnBuffs();
         if (!CurrentCombatant.isHero) {
             Tools.DelayMethod(0.5f, () => PerformAction(CurrentCombatant.enemyData.action, CurrentCombatant));
@@ -67,7 +62,7 @@ public class CombatMaster : Singleton<CombatMaster> {
     private void CleanUp() {
         CombatUI.Instance.DisableUI();
         foreach (var h in CombatantHeroes) { h.SaveHero(); }
-        foreach (var c in turnOrder) { Destroy(c.GameObject); }
+        foreach (var c in Combatants) { Destroy(c.GameObject); }
     }
 
     public void PerformAction(ActionData data, Combatant source, Combatant target = null) {
@@ -139,10 +134,9 @@ public class CombatMaster : Singleton<CombatMaster> {
         return new CombatantHero(view, data);
     }
 
-    private Combatant CreateEnemy(GameObject spawnPoint, EnemyData data) {
+    private Combatant CreateEnemy(GameObject spawnPoint, EnemyData data, int index) {
         var go = Instantiate(characterPrefab, spawnPoint.transform.position, Quaternion.identity, spawnPoint.transform);
         var view = go.GetComponent<CombatantView>();
-        return new Combatant(view, data);
+        return new Combatant(view, data, index);
     }
-
 }

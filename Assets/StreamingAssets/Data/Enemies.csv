@@ -1,3 +1,3 @@
-﻿id,name,sprite,HP,STR,resist,active
-1,goblin,1,30,3,3,dmg-re-5
-2,skeleton,2,50,5,5,dmg-re-5 buff(wea)-re-1
+﻿id,name,sprite,HP,STR,resist,speed,active
+1,goblin,1,30,3,3,4,dmg-re-5
+2,skeleton,2,50,5,5,6,dmg-re-5 buff(wea)-re-1
