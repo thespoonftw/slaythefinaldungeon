@@ -12,7 +12,7 @@ public class TurnOrderView : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        TurnCalculator.Instance.OnUpdate -= UpdateTurns;
+        if (TurnCalculator.Instance != null) TurnCalculator.Instance.OnUpdate -= UpdateTurns;
     }
 
     private void UpdateTurns(List<CombatantTurn> turns) {

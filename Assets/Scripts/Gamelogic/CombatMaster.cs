@@ -36,8 +36,9 @@ public class CombatMaster : Singleton<CombatMaster> {
     private void StartTurn() {
         CurrentCombatant = TurnCalculator.Instance.TakeTurn();
         CurrentCombatant.StartOfTurnBuffs();
+        CombatUI.Instance.MoveActive();
         if (!CurrentCombatant.isHero) {
-            Tools.DelayMethod(0.5f, () => PerformAction(CurrentCombatant.enemyData.action, CurrentCombatant));
+            Tools.DelayMethod(0.5f, () => PerformAction(CurrentCombatant.EnemyData.action, CurrentCombatant, Tools.RandomFromList(LivingHeroes)));
             Tools.DelayMethod(1.5f, EndTurn);
         } else {
             CombatUI.Instance.StartTurn();
@@ -83,33 +84,33 @@ public class CombatMaster : Singleton<CombatMaster> {
             }
 
             var targets = new List<Combatant>();
-            if (a.targettingType == TargettingType.Enemy || a.targettingType == TargettingType.Friendly || a.targettingType == TargettingType.Adjacent) {
+            if (a.targettingMode == TargettingMode.Target) {
                 targets.Add(target);
-            } else if (a.targettingType == TargettingType.RandomEnemy && CurrentCombatant.isHero) {
+            } else if (a.targettingMode == TargettingMode.RandomEnemy && CurrentCombatant.isHero) {
                 targets.Add(randomMonster);
-            } else if (a.targettingType == TargettingType.RandomEnemy && !CurrentCombatant.isHero) {
+            } else if (a.targettingMode == TargettingMode.RandomEnemy && !CurrentCombatant.isHero) {
                 targets.Add(randomHero);
-            } else if (a.targettingType == TargettingType.Self) {
+            } else if (a.targettingMode == TargettingMode.Self) {
                 targets.Add(source);
-            } else if ((a.targettingType == TargettingType.AllFriendly && CurrentCombatant.isHero) || (a.targettingType == TargettingType.AllEnemies && !CurrentCombatant.isHero)) {
+            } else if ((a.targettingMode == TargettingMode.AllFriendly && CurrentCombatant.isHero) || (a.targettingMode == TargettingMode.AllEnemies && !CurrentCombatant.isHero)) {
                 targets.AddRange(LivingHeroes);
-            } else if ((a.targettingType == TargettingType.AllFriendly && !CurrentCombatant.isHero) || (a.targettingType == TargettingType.AllEnemies && CurrentCombatant.isHero)) {
+            } else if ((a.targettingMode == TargettingMode.AllFriendly && !CurrentCombatant.isHero) || (a.targettingMode == TargettingMode.AllEnemies && CurrentCombatant.isHero)) {
                 targets.AddRange(LivingMonsters);
-            } else if (a.targettingType == TargettingType.AllAdjacent && CurrentCombatant.isHero) {
+            } else if (a.targettingMode == TargettingMode.AllOtherFriendly && CurrentCombatant.isHero) {
                 targets.AddRange(LivingHeroes);
                 targets.Remove(source);
-            } else if (a.targettingType == TargettingType.AllAdjacent && !CurrentCombatant.isHero) {
+            } else if (a.targettingMode == TargettingMode.AllOtherFriendly && !CurrentCombatant.isHero) {
                 targets.AddRange(LivingMonsters);
                 targets.Remove(source);
             }
             foreach (var t in targets) {
                 // do the active
                 if (a.type == ActiveType.dmg) {
-                    var dmg = Mathf.RoundToInt(a.amount * (CurrentCombatant.str * Mathf.Sqrt(CurrentCombatant.CombatLevel) / t.resist));
-                    Debug.Log(a.amount + " * " + CurrentCombatant.str + " * SQRT(" + CurrentCombatant.CombatLevel + ") / " + t.resist + " = " + dmg);
-                    t.TakeDamage(dmg);
+                    t.TakeDamage(a.amount * CurrentCombatant.str / 10f, a.damageType);
+                } else if (a.type == ActiveType.magic) {
+                    t.TakeDamage(a.amount * CurrentCombatant.magic / 10f, a.damageType);
                 } else if (a.type == ActiveType.heal) {
-                    t.TakeDamage(-a.amount);
+                    t.TakeDamage(a.amount * CurrentCombatant.magic / 10f, DamageType.heal);
                 } else if (a.type == ActiveType.buff) {
                     t.ApplyBuff(new Buff(source, target, a.amount, Data.buffs[a.buff]));
                 }
@@ -121,10 +122,10 @@ public class CombatMaster : Singleton<CombatMaster> {
 
     public void EquipmentStats(Hero hero, Passive passive) {
         if (passive.type == PassiveType.hp) {
-            hero.stats.maxHp += passive.amount;
+            hero.maxHp += passive.amount;
             hero.currentHp += passive.amount;
         } else if (passive.type == PassiveType.energy) {
-            hero.energy += passive.amount;
+            hero.maxEnergy += passive.amount;
         }
     }
 

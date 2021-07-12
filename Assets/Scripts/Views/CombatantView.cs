@@ -18,10 +18,10 @@ public class CombatantView : MonoBehaviour {
 
     public void Init(Combatant model) {
         this.model = model;
-        sprite.sprite = Data.sprites[this.model.spriteId];
+        sprite.sprite = Data.sprites[this.model.data.spriteId];
         UpdateHealthText();
         this.model.CurrentHp.OnUpdate += UpdateHealthText;
-        this.model.CurrentHp.OnChange += HealthChange;
+        this.model.OnDamage += TakeDamage;
         this.model.MaxHp.OnUpdate += UpdateHealthText;
         this.model.Animation.OnNewValue += PlayAnimation;
         this.model.Buffs.OnNewValue += UpdateBuffs;
@@ -29,7 +29,7 @@ public class CombatantView : MonoBehaviour {
 
     public void OnDestroy() {
         model.CurrentHp.OnUpdate -= UpdateHealthText;
-        model.CurrentHp.OnChange -= HealthChange;
+        model.OnDamage -= TakeDamage;
         model.MaxHp.OnUpdate -= UpdateHealthText;
         model.Animation.OnNewValue -= PlayAnimation;
         model.Buffs.OnNewValue -= UpdateBuffs;
@@ -65,13 +65,19 @@ public class CombatantView : MonoBehaviour {
         }
     }
 
-    private void HealthChange(int before, int after) {        
-        if (after <= before) {
-            damage.color = Color.white;
-            damage.text = (before - after).ToString();
+    private void TakeDamage(int amount, DamageType type) {
+        damage.text = amount.ToString();
+        if (amount < 0) {
+            damage.text = (-amount).ToString();
+            damage.color = new Color(0.4f, 1f, 0.4f);
+        } else if (type == DamageType.fire) {
+            damage.color = new Color(1f, 0.6f, 0.4f);
+        } else if (type == DamageType.cold) {
+            damage.color = new Color(0.4f, 1f, 1f);
+        } else if (type == DamageType.shock) {
+            damage.color = new Color(1f, 1f, 0.4f);
         } else {
-            damage.color = Color.green;
-            damage.text = (after - before).ToString();
+            damage.color = Color.white;
         }
         Tools.DelayMethod(0.75f, () => damage.text = "");
 

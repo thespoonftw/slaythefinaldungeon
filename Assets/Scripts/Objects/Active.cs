@@ -4,81 +4,112 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+public enum DamageType {
+    none,
+    physical,
+    piercing,
+    fire,
+    cold,
+    shock,
+    heal,
+}
+
 public enum ActiveType {
     dmg,
+    magic,
     heal,
     buff,
     wait,
 }
 
-public enum TargettingType { 
+public enum TargettingMode { 
+    Target,
     Self,
-    Enemy,
     AllEnemies,
-    Adjacent,
-    AllAdjacent,   
-    Friendly,
-    AllFriendly,
     RandomEnemy,
+    AllFriendly,
+    AllOtherFriendly,
 }
 
 public class Active {
 
     public ActiveType type;
     public int amount;
-    public TargettingType targettingType;
+    public TargettingMode targettingMode;
     public BuffType buff;
+    public DamageType damageType;
 
-    public Active(ActiveType type, TargettingType targettingType, int amount) {
+    public Active(ActiveType type, TargettingMode targettingType, int amount) {
         this.type = type;
-        this.targettingType = targettingType;
+        this.targettingMode = targettingType;
         this.amount = amount;
     }
 
     public Active(string data) {
-        var split = data.Split('-');
+        var split = data.Split('(');
+        var parameters = split[1].Split(' ');
 
-        var splitFirst = split[0].Split('(');
-
-        switch (splitFirst[0]) {
+        switch (split[0]) {
             case "dmg":
-                type = ActiveType.dmg; break;
+                type = ActiveType.dmg;
+                targettingMode = GetTargettingMode(parameters[0]);
+                amount = int.Parse(parameters[1]);
+                if (parameters.Length < 3) {
+                    damageType = DamageType.physical;
+                } else {
+                    damageType = getDamageType(parameters[2]);
+                }
+                break;
+            case "magic":
+                type = ActiveType.magic;
+                targettingMode = GetTargettingMode(parameters[0]);
+                amount = int.Parse(parameters[1]);
+                if (parameters.Length < 3) {
+                    damageType = DamageType.physical;
+                } else {
+                    damageType = getDamageType(parameters[2]);
+                }
+                break;
             case "heal":
-                type = ActiveType.heal; break;
+                type = ActiveType.heal;
+                targettingMode = GetTargettingMode(parameters[0]);
+                amount = int.Parse(parameters[1]);
+                break;
             case "wait":
-                type = ActiveType.wait; break;
+                type = ActiveType.wait;
+                amount = int.Parse(parameters[0]);
+                break;
             case "buff":
                 type = ActiveType.buff;
-                var buffcode = splitFirst[1].Substring(0, splitFirst[1].Length - 1);
-                buff = Tools.ParseEnum<BuffType>(buffcode);
+                targettingMode = GetTargettingMode(parameters[0]);
+                amount = int.Parse(parameters[1]);
+                buff = Tools.ParseEnum<BuffType>(parameters[2]);
                 break;
 
         }
+    }
 
-        switch (split[1]) {
-            case "s":
-                targettingType = TargettingType.Self; break;
-            case "e":
-                targettingType = TargettingType.Enemy; break;
-            case "ae":
-                targettingType = TargettingType.AllEnemies; break;
-            case "a":
-                targettingType = TargettingType.Adjacent; break;
-            case "aa":
-                targettingType = TargettingType.AllAdjacent; break;
-            case "f":
-                targettingType = TargettingType.Friendly; break;
-            case "af":
-                targettingType = TargettingType.AllFriendly; break;
-            case "re":
-                targettingType = TargettingType.RandomEnemy; break;
+    private TargettingMode GetTargettingMode(string s) {
+        switch (s) {
+            default: return TargettingMode.Target;
+            case "s": return TargettingMode.Self;
+            case "e": return TargettingMode.AllEnemies;
+            case "re": return TargettingMode.RandomEnemy;
+            case "f": return TargettingMode.AllFriendly;
+            case "o": return TargettingMode.AllOtherFriendly;
 
         }
+    }
 
-
-        amount = int.Parse(split[2]);
-
-
+    private DamageType getDamageType(string s) {
+        switch (s) {
+            default: return DamageType.physical;
+            case "pierce": return DamageType.piercing;
+            case "fire": return DamageType.fire;
+            case "cold": return DamageType.cold;
+            case "shock": return DamageType.shock;
+            case "heal": return DamageType.heal;
+        }
     }
 }
 

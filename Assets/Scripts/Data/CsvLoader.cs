@@ -18,7 +18,7 @@ public class CsvLoader {
         }
         return returner;
     }
-    public static Dictionary<int, T> LoadAsType<T>(string filename) {
+    public static Dictionary<int, T> LoadInt<T>(string filename) {
         Debug.Log("Attempting to load " + filename + " ...");
         var returner = new Dictionary<int, T>();
         var data = LoadFile(filename);
@@ -28,6 +28,18 @@ public class CsvLoader {
             returner.Add(key, value);
         }
         returner.Add(0, default);
+        return returner;
+    }
+
+    public static Dictionary<string, T> LoadString<T>(string filename) {
+        Debug.Log("Attempting to load " + filename + " ...");
+        var returner = new Dictionary<string, T>();
+        var data = LoadFile(filename);
+        foreach (var h in data) {
+            var value = (T)Activator.CreateInstance(typeof(T), h);
+            var key = h[0];
+            returner.Add(key, value);
+        }
         return returner;
     }
 

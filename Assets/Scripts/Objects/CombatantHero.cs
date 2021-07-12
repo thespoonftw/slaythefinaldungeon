@@ -6,27 +6,20 @@ using UnityEngine;
 
 public class CombatantHero : Combatant {
 
-    public Hero hero;
-
-    public override int CombatLevel => hero.level;
-
     public List<CardData> drawDeck;
     public List<CardData> discardPile = new List<CardData>();
     public List<CardData> hand = new List<CardData>();
 
-    public CombatantHero(CombatantView view, Hero hero) : base(view, null, 0) {
-        this.hero = hero;
-        name = hero.name;
-        drawDeck = new List<CardData>(hero.deck);
-        CurrentHp.Value = hero.currentHp;
-        spriteId = hero.spriteId;
-        LoadStats(hero.stats);
+    public CombatantHero(CombatantView view, Hero data) : base(view, data, 0) {
+        name = data.name;
+        drawDeck = new List<CardData>(data.deck);
+        CurrentHp.Value = data.currentHp;
         view.Init(this);
         isHero = true;
     }
 
     public void SaveHero() {
-        hero.currentHp = CurrentHp.Value;
+        HeroData.currentHp = CurrentHp.Value;
     }
 
     public void DrawHand(int handSize) {

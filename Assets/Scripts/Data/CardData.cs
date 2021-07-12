@@ -15,7 +15,10 @@ public class CardData {
         id = Tools.ParseDataInt(data, 0);
         name = data[1];
         description = data[2];
-        active = ActionData.LoadAction(Tools.ParseDataInt(data, 3), data[4], name, description);
+        var cost = Tools.ParseDataInt(data, 3);
+        var targettingMode = ActionData.GetTargettingMode(data[4]);
+        var actives = data[5];
+        active = ActionData.LoadAction(cost, actives, name, targettingMode, description);
     }
 }
 

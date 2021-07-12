@@ -11,15 +11,17 @@ public class Data : MonoBehaviour {
     public static Dictionary<int, EquipmentData> equipment;
     public static Dictionary<BuffType, BuffData> buffs;
     public static Dictionary<int, CardData> cards;
+    public static Dictionary<string, EnemyClassData> enemyClasses;
 
     public void LoadData() {
-        heroes = CsvLoader.LoadAsType<HeroData>("Heroes");
-        enemies = CsvLoader.LoadAsType<EnemyData>("Enemies");
-        encounters = CsvLoader.LoadAsType<EncounterData>("Encounters");
-        equipment = CsvLoader.LoadAsType<EquipmentData>("Equipment");
+        heroes = CsvLoader.LoadInt<HeroData>("Heroes");
+        enemies = CsvLoader.LoadInt<EnemyData>("Enemies");
+        encounters = CsvLoader.LoadInt<EncounterData>("Encounters");
+        equipment = CsvLoader.LoadInt<EquipmentData>("Equipment");
         buffs = CsvLoader.LoadBuffs("Buffs");
-        cards = CsvLoader.LoadAsType<CardData>("Cards");
-        sprites = gameObject.AddComponent<SpriteLoader>().Load();
+        cards = CsvLoader.LoadInt<CardData>("Cards");
+        enemyClasses = CsvLoader.LoadString<EnemyClassData>("EnemyClass");
+        sprites = gameObject.AddComponent<SpriteLoader>().Load();        
         Debug.Log("Streaming Assets fully loaded");
     }
 }

@@ -9,14 +9,11 @@ public enum BuffType {
     wea,
     pro,
     vul,
+    emp,
+    dam,
 }
 
 public class BuffData {
-
-    public static float STR_MOD = 0.5f;
-    public static float WEA_MOD = 0.33333f;
-    public static float PRO_MOD = 0.5f;
-    public static float VUL_MOD = 0.33333f;
 
     public BuffType type;
     public string name;

@@ -10,6 +10,7 @@ public class Buff {
     public Combatant target;
     public int durationRemaining;
     public BuffData data;
+    public BuffType Type => data.type;
 
     public Buff(Combatant source, Combatant target, int duration, BuffData data) {
         this.source = source;

@@ -1,5 +1,7 @@
 ﻿code,name,description,sprite,start or end
-str,Strengthened,Power increased by 50%,2001,end
-wea,Weakened,Power decreased by 33%,2002,end
-pro,Protected,Resistance increased by 50%,2003,start
-vul,Vulnerable,Resistance decreased by 33%,2004,start
+str,Strengthened,Strength increased by 50%,2001,end
+wea,Weakened,Strength decreased by 33%,2002,end
+pro,Protected,Physical resistance increased by 50% (max 75%),2003,start
+vul,Vulnerable,Physical resistance decreased by 50% (min 0%),2004,start
+emp,Empowered,Magic increased by 50%,2005,end
+dam,Dampened,Magic decreased by 33%,2006,end

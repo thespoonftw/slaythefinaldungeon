@@ -5,28 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class Hero {
+public class Hero : CharacterData {
 
-    public string name;
     public int currentHp;
-    public int spriteId;
     public int level;
-    public int energy;
-    public Stats stats;
+    public int maxEnergy;
     public EquipmentData lhEquipment;
     public EquipmentData rhEquipment;
     public List<CardData> deck;
 
     public Hero(HeroData data) {
         name = data.name;
+        maxHp = data.maxHp;
+        currentHp = data.maxHp;
+        str = data.str;
+        magic = data.magic;
+        speed = data.speed;
         lhEquipment = Data.equipment[data.startingLHEquipment];
         rhEquipment = Data.equipment[data.startingRHEquipment];
-        spriteId = data.sprite;
-        stats = new Stats(data);
-        currentHp = stats.maxHp;
+        spriteId = data.spriteId;
         deck = data.startingDeck.Select(a => Data.cards[a]).ToList();
         level = 1;
-        energy = 3;
+        maxEnergy = 3;
     }
 }
 

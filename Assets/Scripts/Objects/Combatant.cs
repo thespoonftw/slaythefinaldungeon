@@ -6,19 +6,24 @@ using UnityEngine;
 
 public class Combatant {
 
-    public int str;
-    public int resist;
-    public int spriteId;
-    public float speedFactor;
-    public Stats baseStats;
-    public string name;
-    
     public CombatantView view;
-    public EnemyData enemyData;
+    public CharacterData data;
+    public string name;
+    public int str;
+    public int magic;
+    public float speedFactor;
+    public int fireResistance;
+    public int coldResistance;
+    public int shockResistance;
+    public int physicalResistance;
+    public bool isUndead = false;
 
     public bool isHero = false;
 
-    public virtual int CombatLevel => Mathf.FloorToInt(enemyData.stats.str / 3f);
+    public delegate void DamageEvent(int amount, DamageType type);
+    public event DamageEvent OnDamage;
+    public EnemyData EnemyData => !isHero ? (EnemyData)data : null;
+    public Hero HeroData => isHero ? (Hero)data : null;
     public EProperty<int> MaxHp = new EProperty<int>();
     public EProperty<int> CurrentHp = new EProperty<int>();
     public EProperty<int> Animation = new EProperty<int>(); // 1=attack, 2=damaged, 3=dead
@@ -27,30 +32,46 @@ public class Combatant {
     public GameObject GameObject => view.gameObject;
     public EList<Buff> Buffs = new EList<Buff>();
 
-    public Combatant(CombatantView view, EnemyData enemyData, int index) {
+    public Combatant(CombatantView view, CharacterData data, int index) {
+        // common
+        this.data = data;
         this.view = view;
-        if (enemyData == null) { return; }
-        name = enemyData.name + " " + index;
-        this.enemyData = enemyData;
-        CurrentHp.Value = enemyData.stats.maxHp;
-        spriteId = enemyData.sprite;
-        LoadStats(new Stats(enemyData));
+        MaxHp.Value = data.maxHp;
+        str = data.str;
+        magic = data.magic;
+        speedFactor = 1f / data.speed;
+
+        // below just for monsters
+        if (!(data is EnemyData)) { return; }
+        var enemyData = (EnemyData)data;
+        name = data.name + " " + index;
+        CurrentHp.Value = data.maxHp;
+        var enemyClass = Data.enemyClasses[enemyData.enemyClassData];
+        fireResistance = enemyClass.fireResistance;
+        coldResistance = enemyClass.coldResistance;
+        shockResistance = enemyClass.shockResistance;
+        physicalResistance = enemyClass.physicalResistance;
+        isUndead = enemyClass.isUndead;
         view.Init(this);
     }
 
-    protected void LoadStats(Stats stats) {
-        baseStats = stats.Clone();
-        MaxHp.Value = stats.maxHp;
-        str = stats.str;
-        resist = stats.resist;
-        speedFactor = 1f / stats.speed;
-    }
+    public void TakeDamage(float amount, DamageType type) {
 
-    public void TakeDamage(int amount) {
-        if (CurrentHp.Value - amount >= MaxHp.Value) {
+        var resistanceMultiplier = 1f;
+        switch(type) {
+            case DamageType.physical: { resistanceMultiplier = Mathf.Clamp(1 - (physicalResistance / 100f), 0.25f, 1f); break; }
+            case DamageType.heal: { resistanceMultiplier = isUndead ? 1 : -1; break; }
+            case DamageType.fire: { resistanceMultiplier = 1 - (fireResistance / 100f); break; }
+            case DamageType.cold: { resistanceMultiplier = 1 - (coldResistance / 100f); break; }
+            case DamageType.shock: { resistanceMultiplier = 1 - (shockResistance / 100f); break; }
+        }
+        var finalAmount = Mathf.RoundToInt(amount * resistanceMultiplier);
+        OnDamage.Invoke(finalAmount, type);
+
+        if (CurrentHp.Value - finalAmount >= MaxHp.Value) {
             CurrentHp.Value = MaxHp.Value;
         } else {
-            CurrentHp.Value -= amount;
+            CurrentHp.Value -= finalAmount;
         }
 
         if (CurrentHp.Value <= 0) {
@@ -69,10 +90,12 @@ public class Combatant {
         } else {
             Buffs.Add(buff);
             switch (buff.data.type) {
-                case BuffType.pro: resist += Mathf.RoundToInt(baseStats.resist * BuffData.PRO_MOD); break;
-                case BuffType.vul: resist -= Mathf.RoundToInt(baseStats.resist * BuffData.VUL_MOD); break;
-                case BuffType.str: str += Mathf.RoundToInt(baseStats.resist * BuffData.STR_MOD); break;
-                case BuffType.wea: str -= Mathf.RoundToInt(baseStats.resist * BuffData.WEA_MOD); break;
+                case BuffType.pro: physicalResistance += 50; break;
+                case BuffType.vul: physicalResistance -= 50; break;
+                case BuffType.str: str += Mathf.RoundToInt(data.str * 0.5f); break;
+                case BuffType.wea: str -= Mathf.RoundToInt(data.str * 0.333f); break;
+                case BuffType.emp: magic += Mathf.RoundToInt(data.magic * 0.5f); break;
+                case BuffType.dam: magic -= Mathf.RoundToInt(data.magic * 0.333f); break;
             }
 
         }
@@ -80,12 +103,13 @@ public class Combatant {
 
     private void RemoveBuff(Buff buff) {
         Buffs.Remove(buff);
-
         switch (buff.data.type) {
-            case BuffType.pro: resist -= Mathf.RoundToInt(baseStats.resist * BuffData.PRO_MOD); break;
-            case BuffType.vul: resist += Mathf.RoundToInt(baseStats.resist * BuffData.VUL_MOD); break;
-            case BuffType.str: str -= Mathf.RoundToInt(baseStats.resist * BuffData.STR_MOD); break;
-            case BuffType.wea: str += Mathf.RoundToInt(baseStats.resist * BuffData.WEA_MOD); break;
+            case BuffType.pro: physicalResistance -= 50; break;
+            case BuffType.vul: physicalResistance += 50; break;
+            case BuffType.str: str -= Mathf.RoundToInt(data.str * 0.5f); break;
+            case BuffType.wea: str += Mathf.RoundToInt(data.str * 0.333f); break;
+            case BuffType.emp: magic -= Mathf.RoundToInt(data.magic * 0.5f); break;
+            case BuffType.dam: magic += Mathf.RoundToInt(data.magic * 0.333f); break;
         }
     }
 

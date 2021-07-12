@@ -27,10 +27,10 @@ public class GameMaster : Singleton<GameMaster> {
 
     public void EquipmentStats(Hero hero, Passive passive) {
         if (passive.type == PassiveType.hp) {
-            hero.stats.maxHp += passive.amount;
+            hero.maxHp += passive.amount;
             hero.currentHp += passive.amount;
         } else if (passive.type == PassiveType.energy) {
-            hero.energy += passive.amount;
+            hero.maxEnergy += passive.amount;
         }
     }
 
