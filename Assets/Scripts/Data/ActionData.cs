@@ -13,14 +13,13 @@ public enum ActionTarget {
     Friendly,
 }
 
-
 public class ActionData {
 
     public string name;
     public string tooltip;
     public int energyCost;
     public List<Active> actives = new List<Active>();
-    public ActionTarget targettingMode;
+    public ActionTarget targettingMode;    
 
     public static ActionData LoadAction(int energyCost, string data, string name, ActionTarget targettingMode, string tooltip = "") {
         if (data == null || data == "") { return null; }

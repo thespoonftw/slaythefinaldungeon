@@ -130,5 +130,13 @@ public class Combatant {
             }
         }
     }
+
+    public int GetAttribute(ScalingAttribute attribute) {
+        switch (attribute) {
+            default: return 0;
+            case ScalingAttribute.Strength: return str;
+            case ScalingAttribute.Magic: return magic;
+        }
+    }
     
 }

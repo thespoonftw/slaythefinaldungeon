@@ -2,5 +2,5 @@
 1,Sword,hit target #,1,t,dmg(t 5),
 2,Shield,,1,,,hp(20)
 3,Bow,hit target #,1,t,dmg(t 7),
-4,Flame Wand,hit a random enemy # fire,1,n,magic(re 4 fire),energy(1)
+4,Flame Wand,hit a random enemy # fire,1,n,dmg(re 4 fire),energy(1)
 5,Holy Symbol,heal any target #,1,a,heal(t 5),

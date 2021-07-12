@@ -70,14 +70,14 @@ public class CombatMaster : Singleton<CombatMaster> {
         StartCoroutine(ActionCoroutine(data, source, target));
     }
 
-    public IEnumerator ActionCoroutine(ActionData data, Combatant source, Combatant target = null) {
+    public IEnumerator ActionCoroutine(ActionData action, Combatant source, Combatant target = null) {
         source.Animation.Value = 1;
         //evaluate targets
        
         var randomMonster = Tools.RandomFromList(LivingMonsters);
         var randomHero = Tools.RandomFromList(LivingHeroes);
         
-        foreach (var a in data.actives) {
+        foreach (var a in action.actives) {
             if (a.type == ActiveType.wait) {
                 yield return new WaitForSeconds(a.amount / 1000f);
                 continue;
@@ -106,9 +106,7 @@ public class CombatMaster : Singleton<CombatMaster> {
             foreach (var t in targets) {
                 // do the active
                 if (a.type == ActiveType.dmg) {
-                    t.TakeDamage(a.amount * CurrentCombatant.str / 10f, a.damageType);
-                } else if (a.type == ActiveType.magic) {
-                    t.TakeDamage(a.amount * CurrentCombatant.magic / 10f, a.damageType);
+                    t.TakeDamage(a.amount * CurrentCombatant.GetAttribute(a.ScalingAttribute) / 10f, a.damageType);
                 } else if (a.type == ActiveType.heal) {
                     t.TakeDamage(a.amount * CurrentCombatant.magic / 10f, DamageType.heal);
                 } else if (a.type == ActiveType.buff) {

@@ -9,10 +9,12 @@ public class CardView : MonoBehaviour {
     [SerializeField] TextMeshPro text;
     [SerializeField] SpriteRenderer sprite;
 
+    private CombatantHero hero;
+
     public ActionData action { get; set; }
     public Vector3 originalPosition { get; set; }
 
-    public void SetContent(ActionData action) {
+    public void SetContent(ActionData action, CombatantHero hero = null) {
         this.action = action;
         if (action == null) {
             text.text = "";
@@ -20,6 +22,7 @@ public class CardView : MonoBehaviour {
             sprite.enabled = false;
             GetComponent<Collider>().enabled = false;
         } else {
+            this.hero = hero;
             text.text = "[" + action.energyCost + "] " + action.name;
             text.enabled = true;
             sprite.enabled = true;
@@ -27,8 +30,25 @@ public class CardView : MonoBehaviour {
         }
     }
 
+    private string GetCardDescription() {
+        var returner = action.tooltip;
+        while (returner.Contains("#")) {
+            var hash = returner.IndexOf('#'); 
+            var act = 1;
+            var offset = 0;
+            if (hash < returner.Length - 1 && char.IsDigit(returner[hash + 1])) {
+                act = (int)char.GetNumericValue(returner[hash + 1]);
+                offset = 1;
+            }
+            var active = action.actives[act - 1];
+            var dmg = Mathf.RoundToInt(active.amount * hero.GetAttribute(active.ScalingAttribute) / 10f);
+            returner = returner.Substring(0, hash) + dmg + returner.Substring(hash + 1 + offset);
+        }        
+        return returner;
+    }
+
     private void OnMouseEnter() {
-        CombatUI.Instance.SetTooltip(action.tooltip);
+        CombatUI.Instance.SetTooltip(GetCardDescription());
     }
 
     private void OnMouseExit() {

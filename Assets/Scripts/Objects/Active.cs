@@ -16,7 +16,6 @@ public enum DamageType {
 
 public enum ActiveType {
     dmg,
-    magic,
     heal,
     buff,
     wait,
@@ -31,6 +30,12 @@ public enum TargettingMode {
     AllOtherFriendly,
 }
 
+public enum ScalingAttribute {
+    None,
+    Strength,
+    Magic,
+}
+
 public class Active {
 
     public ActiveType type;
@@ -38,6 +43,8 @@ public class Active {
     public TargettingMode targettingMode;
     public BuffType buff;
     public DamageType damageType;
+
+    public ScalingAttribute ScalingAttribute => (damageType == DamageType.physical || damageType == DamageType.piercing) ? ScalingAttribute.Strength : ScalingAttribute.Magic;
 
     public Active(ActiveType type, TargettingMode targettingType, int amount) {
         this.type = type;
@@ -52,16 +59,6 @@ public class Active {
         switch (split[0]) {
             case "dmg":
                 type = ActiveType.dmg;
-                targettingMode = GetTargettingMode(parameters[0]);
-                amount = int.Parse(parameters[1]);
-                if (parameters.Length < 3) {
-                    damageType = DamageType.physical;
-                } else {
-                    damageType = getDamageType(parameters[2]);
-                }
-                break;
-            case "magic":
-                type = ActiveType.magic;
                 targettingMode = GetTargettingMode(parameters[0]);
                 amount = int.Parse(parameters[1]);
                 if (parameters.Length < 3) {

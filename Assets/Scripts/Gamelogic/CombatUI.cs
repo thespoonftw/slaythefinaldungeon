@@ -72,11 +72,11 @@ public class CombatUI : Singleton<CombatUI> {
         CurrentHero.DrawHand(3);
         var lh = CurrentHero.HeroData.lhEquipment;
         var rh = CurrentHero.HeroData.rhEquipment;
-        if (lh != null && lh.actionType != null) { lhEquipmentCard.SetContent(lh.actionType); }
-        if (rh != null && rh.actionType != null) { rhEquipmentCard.SetContent(rh.actionType); }
-        card1.SetContent(CurrentHero.hand[0].active);
-        card2.SetContent(CurrentHero.hand[1].active);
-        card3.SetContent(CurrentHero.hand[2].active);        
+        if (lh != null && lh.actionType != null) { lhEquipmentCard.SetContent(lh.actionType, CurrentHero); }
+        if (rh != null && rh.actionType != null) { rhEquipmentCard.SetContent(rh.actionType, CurrentHero); }
+        card1.SetContent(CurrentHero.hand[0].active, CurrentHero);
+        card2.SetContent(CurrentHero.hand[1].active, CurrentHero);
+        card3.SetContent(CurrentHero.hand[2].active, CurrentHero);        
         energyImage.SetActive(true);
         endTurnButton.SetActive(true);
         energyRemaining.Value = CurrentHero.HeroData.maxEnergy;
