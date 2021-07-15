@@ -15,12 +15,12 @@ public class Data : MonoBehaviour {
 
     public void LoadData() {
         heroes = CsvLoader.LoadInt<HeroData>("Heroes");
+        enemyClasses = CsvLoader.LoadString<EnemyClassData>("EnemyClass"); // must load before enemies
         enemies = CsvLoader.LoadInt<EnemyData>("Enemies");
         encounters = CsvLoader.LoadInt<EncounterData>("Encounters");
         equipment = CsvLoader.LoadInt<EquipmentData>("Equipment");
         buffs = CsvLoader.LoadBuffs("Buffs");
-        cards = CsvLoader.LoadInt<CardData>("Cards");
-        enemyClasses = CsvLoader.LoadString<EnemyClassData>("EnemyClass");
+        cards = CsvLoader.LoadInt<CardData>("Cards");        
         sprites = gameObject.AddComponent<SpriteLoader>().Load();        
         Debug.Log("Streaming Assets fully loaded");
     }

@@ -40,18 +40,16 @@ public class Combatant {
         str = data.str;
         magic = data.magic;
         speedFactor = 1f / data.speed;
+        fireResistance = data.fireResistance;
+        coldResistance = data.coldResistance;
+        shockResistance = data.shockResistance;
+        physicalResistance = data.physicalResistance;
+        isUndead = data.isUndead;
 
         // below just for monsters
         if (!(data is EnemyData)) { return; }
-        var enemyData = (EnemyData)data;
         name = data.name + " " + index;
-        CurrentHp.Value = data.maxHp;
-        var enemyClass = Data.enemyClasses[enemyData.enemyClassData];
-        fireResistance = enemyClass.fireResistance;
-        coldResistance = enemyClass.coldResistance;
-        shockResistance = enemyClass.shockResistance;
-        physicalResistance = enemyClass.physicalResistance;
-        isUndead = enemyClass.isUndead;
+        CurrentHp.Value = data.maxHp;        
         view.Init(this);
     }
 

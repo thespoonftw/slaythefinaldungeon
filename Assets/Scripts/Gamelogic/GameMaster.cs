@@ -26,11 +26,35 @@ public class GameMaster : Singleton<GameMaster> {
     }
 
     public void EquipmentStats(Hero hero, Passive passive) {
-        if (passive.type == PassiveType.hp) {
-            hero.maxHp += passive.amount;
-            hero.currentHp += passive.amount;
-        } else if (passive.type == PassiveType.energy) {
-            hero.maxEnergy += passive.amount;
+        switch (passive.type) {
+            case PassiveType.hp:
+                hero.maxHp += passive.amount;
+                hero.currentHp += passive.amount;
+                break;
+            case PassiveType.energy:
+                hero.maxEnergy += passive.amount;
+                break;
+            case PassiveType.strength:
+                hero.str += passive.amount;
+                break;
+            case PassiveType.magic:
+                hero.magic += passive.amount;
+                break;
+            case PassiveType.speed:
+                hero.speed += passive.amount;
+                break;
+            case PassiveType.physical:
+                hero.physicalResistance += passive.amount;
+                break;
+            case PassiveType.fire:
+                hero.fireResistance += passive.amount;
+                break;
+            case PassiveType.cold:
+                hero.coldResistance += passive.amount;
+                break;
+            case PassiveType.shock:
+                hero.shockResistance += passive.amount;
+                break; 
         }
     }
 

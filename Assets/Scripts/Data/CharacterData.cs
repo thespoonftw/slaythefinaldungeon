@@ -13,6 +13,11 @@ public class CharacterData {
     public int magic;
     public int maxHp;
     public int speed;
+    public int physicalResistance;
+    public int fireResistance;
+    public int coldResistance;
+    public int shockResistance;
+    public bool isUndead;
 
 }
 
@@ -38,7 +43,7 @@ public class HeroData : CharacterData {
 public class EnemyData : CharacterData {
 
     public ActionData action;
-    public string enemyClassData;
+    //public string enemyClassData;
 
     public EnemyData(List<string> data) {
         id = Tools.ParseDataInt(data, 0);
@@ -48,7 +53,12 @@ public class EnemyData : CharacterData {
         str = Tools.ParseDataInt(data, 4);
         magic = Tools.ParseDataInt(data, 5);
         speed = Tools.ParseDataInt(data, 6);
-        enemyClassData = data[7];
+        var eClass = Data.enemyClasses[data[7]];
+        physicalResistance = eClass.physicalResistance;
+        fireResistance = eClass.fireResistance;
+        coldResistance = eClass.coldResistance;
+        shockResistance = eClass.shockResistance;
+        isUndead = eClass.isUndead;
         action = ActionData.LoadAction(0, data[8], "attack", ActionTarget.Target);
     }
 }
