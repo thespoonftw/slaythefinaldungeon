@@ -12,12 +12,14 @@ public class Data : MonoBehaviour {
     public static Dictionary<BuffType, BuffData> buffs;
     public static Dictionary<int, CardData> cards;
     public static Dictionary<string, EnemyClassData> enemyClasses;
+    public static Dictionary<string, EnemyActionData> enemyActions;
 
     public void LoadData() {
         heroes = CsvLoader.LoadInt<HeroData>("Heroes");
         enemyClasses = CsvLoader.LoadString<EnemyClassData>("EnemyClass"); // must load before enemies
+        enemyActions = CsvLoader.LoadString<EnemyActionData>("EnemyActions"); // must load before enemies
         enemies = CsvLoader.LoadInt<EnemyData>("Enemies");
-        encounters = CsvLoader.LoadInt<EncounterData>("Encounters");
+        encounters = CsvLoader.LoadEncounters("Encounters");
         equipment = CsvLoader.LoadInt<EquipmentData>("Equipment");
         buffs = CsvLoader.LoadBuffs("Buffs");
         cards = CsvLoader.LoadInt<CardData>("Cards");        

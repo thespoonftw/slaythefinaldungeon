@@ -16,12 +16,16 @@ public class CombatUI : Singleton<CombatUI> {
 
     [SerializeField] GameObject targetSelector;
     [SerializeField] GameObject activeHeroSelector;
-    [SerializeField] GameObject endTurnButton;
+    
     [SerializeField] GameObject energyImage;
     [SerializeField] GameObject tooltip;
     [SerializeField] LineRenderer cardAimerLine;
     [SerializeField] GameObject validTarget;
     [SerializeField] GameObject invalidTarget;
+
+    [SerializeField] GameObject endTurnButton;
+    [SerializeField] GameObject advanceButton;
+    [SerializeField] GameObject holdButton;
 
     private CombatMaster combatMaster;
     private CardView currentCard;
@@ -80,13 +84,34 @@ public class CombatUI : Singleton<CombatUI> {
         energyImage.SetActive(true);
         endTurnButton.SetActive(true);
         energyRemaining.Value = CurrentHero.HeroData.maxEnergy;
-        energyMax.Value = CurrentHero.HeroData.maxEnergy;        
+        energyMax.Value = CurrentHero.HeroData.maxEnergy;
+        UpdateAdvanceButton();
     }
 
     public void EndTurnClicked() {
         DisableUI();
         CurrentHero.DiscardHand();
         combatMaster.EndTurn();
+    }
+
+    public void AdvanceButtonClicked() {
+        DisableUI();
+        CurrentHero.DiscardHand();
+        combatMaster.HeroesAdvance();
+        combatMaster.EndTurn();
+    }
+
+    public void UpdateAdvanceButton() {
+        var i = combatMaster.progressIndex + 1;
+        if (combatMaster.tiles[i, 0].occupant == null && combatMaster.tiles[i, 1].occupant == null && combatMaster.tiles[i, 2].occupant == null) {
+            advanceButton.SetActive(true);
+            holdButton.SetActive(true);
+            endTurnButton.SetActive(false);
+        } else {
+            advanceButton.SetActive(false);
+            holdButton.SetActive(false);
+            endTurnButton.SetActive(true);
+        }       
     }
 
     public void DisableUI() {
@@ -99,6 +124,8 @@ public class CombatUI : Singleton<CombatUI> {
         energyImage.SetActive(false);
         tooltip.SetActive(false);
         activeHeroSelector.SetActive(false);
+        advanceButton.SetActive(false);
+        holdButton.SetActive(false);
     }
 
     private void UpdateEnergyRemaining() {
@@ -153,12 +180,15 @@ public class CombatUI : Singleton<CombatUI> {
     public void TargetCombatant(Combatant combatant) {
         if (!isAimingCard) { return; }
         if (combatant != null) {            
-            if (
+            if ((
                 (currentCard.action.targettingMode == ActionTarget.Any) ||
-                (currentCard.action.targettingMode == ActionTarget.Target && combatant != CurrentHero) ||
-                (currentCard.action.targettingMode == ActionTarget.Enemy && combatMaster.LivingMonsters.Contains(combatant)) ||
+                (currentCard.action.targettingMode == ActionTarget.Ranged && combatant != CurrentHero) ||
+                (currentCard.action.targettingMode == ActionTarget.Enemy && combatMaster.ActiveMonsters.Contains(combatant)) ||
                 (currentCard.action.targettingMode == ActionTarget.Friendly && combatMaster.LivingHeroes.Contains(combatant)) ||
-                (currentCard.action.targettingMode == ActionTarget.OtherAlly && combatMaster.LivingHeroes.Contains(combatant) && combatant != CurrentHero)
+                (currentCard.action.targettingMode == ActionTarget.OtherAlly && combatMaster.LivingHeroes.Contains(combatant) && combatant != CurrentHero) ||
+                (currentCard.action.targettingMode == ActionTarget.Melee && combatant.x <= combatMaster.progressIndex + 1 && combatant != CurrentHero) ||
+                (currentCard.action.targettingMode == ActionTarget.Touch && combatant.x <= combatMaster.progressIndex + 1)
+                ) && combatant.x <= combatMaster.progressIndex + 3
                 ) {
                 validTarget.SetActive(true);
                 validTarget.transform.position = combatant.GameObject.transform.position + new Vector3(0, 0, -1);

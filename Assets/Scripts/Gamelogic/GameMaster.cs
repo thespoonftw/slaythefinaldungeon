@@ -58,6 +58,7 @@ public class GameMaster : Singleton<GameMaster> {
         }
     }
 
+    /*
     public void BattleWon() {
         CombatUI.Instance.DisableUI();
         centreText.text = "Battle Won";
@@ -70,6 +71,7 @@ public class GameMaster : Singleton<GameMaster> {
             GameOver();
         }        
     }
+    */
 
     public void GameOver() {
         CombatUI.Instance.DisableUI();

@@ -17,9 +17,9 @@ public class EnemyClassData {
         id = data[0];
         isUndead = data[1] == "Y";
         physicalResistance = Tools.ParseDataInt(data, 2);
-        fireResistance = Tools.ParseDataInt(data, 2);
-        coldResistance = Tools.ParseDataInt(data, 2);
-        shockResistance = Tools.ParseDataInt(data, 2);
+        fireResistance = Tools.ParseDataInt(data, 3);
+        coldResistance = Tools.ParseDataInt(data, 4);
+        shockResistance = Tools.ParseDataInt(data, 5);
     }
 }
 

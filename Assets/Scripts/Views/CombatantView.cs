@@ -43,8 +43,9 @@ public class CombatantView : MonoBehaviour {
     }
 
     private void StopFlickering() {
+        if (sprite == null) { return; }
         isFlickering = false;
-        isFlickerOn = false;
+        isFlickerOn = false;        
         sprite.color = Color.white;
     }
 

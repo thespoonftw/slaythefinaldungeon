@@ -10,7 +10,7 @@ public class CombatantHero : Combatant {
     public List<CardData> discardPile = new List<CardData>();
     public List<CardData> hand = new List<CardData>();
 
-    public CombatantHero(CombatantView view, Hero data) : base(view, data, 0) {
+    public CombatantHero(CombatantView view, Hero data, int x, int y) : base(view, data, x, y) {
         name = data.name;
         drawDeck = new List<CardData>(data.deck);
         CurrentHp.Value = data.currentHp;

@@ -43,6 +43,19 @@ public class CsvLoader {
         return returner;
     }
 
+    public static Dictionary<int, EncounterData> LoadEncounters(string filename) {
+        Debug.Log("Attempting to load " + filename + " ...");
+        var returner = new Dictionary<int, EncounterData>();
+        var data = LoadFile(filename);
+        int i = 0;
+        while (i < data.Count) {
+            var encounter = new EncounterData(data[i], data[i + 1], data[i + 2], data[i + 3]);
+            returner.Add(encounter.id, encounter);
+            i += 4;
+        }
+        return returner;
+    }
+
     public static Dictionary<BuffType, BuffData> LoadBuffs(string filename) {
         Debug.Log("Attempting to load " + filename + " ...");
         var returner = new Dictionary<BuffType, BuffData>();

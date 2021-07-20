@@ -17,6 +17,8 @@ public class Combatant {
     public int shockResistance;
     public int physicalResistance;
     public bool isUndead = false;
+    public int x;
+    public int y;
 
     public bool isHero = false;
 
@@ -32,14 +34,16 @@ public class Combatant {
     public GameObject GameObject => view.gameObject;
     public EList<Buff> Buffs = new EList<Buff>();
 
-    public Combatant(CombatantView view, CharacterData data, int index) {
+    public Combatant(CombatantView view, CharacterData data, int x, int y) {
         // common
         this.data = data;
         this.view = view;
+        this.x = x;
+        this.y = y;
         MaxHp.Value = data.maxHp;
         str = data.str;
         magic = data.magic;
-        speedFactor = 1f / data.speed;
+        speedFactor = 100f / data.speed;
         fireResistance = data.fireResistance;
         coldResistance = data.coldResistance;
         shockResistance = data.shockResistance;
@@ -48,7 +52,7 @@ public class Combatant {
 
         // below just for monsters
         if (!(data is EnemyData)) { return; }
-        name = data.name + " " + index;
+        name = data.name;
         CurrentHp.Value = data.maxHp;        
         view.Init(this);
     }
@@ -58,7 +62,7 @@ public class Combatant {
         var resistanceMultiplier = 1f;
         switch(type) {
             case DamageType.physical: { resistanceMultiplier = Mathf.Clamp(1 - (physicalResistance / 100f), 0.25f, 1f); break; }
-            case DamageType.heal: { resistanceMultiplier = isUndead ? 1 : -1; break; }
+            case DamageType.heal: { resistanceMultiplier = isUndead ? 1.5f : -1; break; }
             case DamageType.fire: { resistanceMultiplier = 1 - (fireResistance / 100f); break; }
             case DamageType.cold: { resistanceMultiplier = 1 - (coldResistance / 100f); break; }
             case DamageType.shock: { resistanceMultiplier = 1 - (shockResistance / 100f); break; }
@@ -73,8 +77,13 @@ public class Combatant {
         }
 
         if (CurrentHp.Value <= 0) {
-            Animation.Value = 3;
-            TurnCalculator.Instance.KillCombatant(this);
+            if (isHero) {
+                Animation.Value = 3;
+                CombatMaster.Instance.KillHero((CombatantHero)this);
+            } else {
+                Animation.Value = 2;
+                CombatMaster.Instance.KillEnemy(this);
+            }
         } else {
             Animation.Value = 2;
         }

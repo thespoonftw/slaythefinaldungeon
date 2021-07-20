@@ -1,3 +1,4 @@
-﻿id,name,sprite,HP,str,magic,speed,class,active
-1,goblin,1,20,7,10,12,goblin,dmg(t 5)
-2,skeleton,2,40,12,10,8,skeleton,dmg(t 5) buff(t 1 wea)
+﻿id,name,sprite,HP,str,magic,speed,class,melee,ranged
+1,goblin,1,20,7,10,12,goblin,melee,advance
+2,skeleton,2,40,12,10,8,skeleton,weakmelee,advance
+3,toad,3,30,16,10,6,amphibian,spit,spit

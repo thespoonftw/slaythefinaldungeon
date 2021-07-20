@@ -19,15 +19,17 @@ public enum ActiveType {
     heal,
     buff,
     wait,
+    advance,
 }
 
 public enum TargettingMode { 
     Target,
     Self,
+    AllMelee,
     AllEnemies,
-    RandomEnemy,
     AllFriendly,
     AllOtherFriendly,
+    RandomEnemy,
 }
 
 public enum ScalingAttribute {
@@ -57,6 +59,9 @@ public class Active {
         var parameters = split[1].Split(' ');
 
         switch (split[0]) {
+            default:
+                Tools.LogError("unknown active " + split[0]);
+                break;
             case "dmg":
                 type = ActiveType.dmg;
                 targettingMode = GetTargettingMode(parameters[0]);
@@ -82,6 +87,10 @@ public class Active {
                 amount = int.Parse(parameters[1]);
                 buff = Tools.ParseEnum<BuffType>(parameters[2]);
                 break;
+            case "advance":
+                type = ActiveType.advance;
+                amount = int.Parse(parameters[0]);
+                break;
 
         }
     }
@@ -90,10 +99,11 @@ public class Active {
         switch (s) {
             default: return TargettingMode.Target;
             case "s": return TargettingMode.Self;
-            case "e": return TargettingMode.AllEnemies;
-            case "re": return TargettingMode.RandomEnemy;
+            case "m": return TargettingMode.AllMelee;
+            case "e": return TargettingMode.AllEnemies;            
             case "f": return TargettingMode.AllFriendly;
             case "o": return TargettingMode.AllOtherFriendly;
+            case "re": return TargettingMode.RandomEnemy;
 
         }
     }

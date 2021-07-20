@@ -42,8 +42,11 @@ public class HeroData : CharacterData {
 }
 public class EnemyData : CharacterData {
 
-    public ActionData action;
+    //public ActionData action;
     //public string enemyClassData;
+
+    public string meleeActionId;
+    public string rangedActionId;
 
     public EnemyData(List<string> data) {
         id = Tools.ParseDataInt(data, 0);
@@ -59,7 +62,8 @@ public class EnemyData : CharacterData {
         coldResistance = eClass.coldResistance;
         shockResistance = eClass.shockResistance;
         isUndead = eClass.isUndead;
-        action = ActionData.LoadAction(0, data[8], "attack", ActionTarget.Target);
+        meleeActionId = data[8];
+        rangedActionId = data[9];
     }
 }
 

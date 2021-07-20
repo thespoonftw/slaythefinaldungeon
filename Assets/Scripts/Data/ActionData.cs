@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 public enum ActionTarget {
     NoTarget,
-    Target,
+    Melee,
+    Touch,
+    Ranged,
     Any,
     Enemy,
     OtherAlly,
@@ -36,11 +38,13 @@ public class ActionData {
 
     public static ActionTarget GetTargettingMode(string s) {
         switch (s) {
-            case "t": return ActionTarget.Target;
-            case "a": return ActionTarget.Any;
+            case "m": return ActionTarget.Melee;
+            case "t": return ActionTarget.Touch;
+            case "r": return ActionTarget.Ranged;
             case "e": return ActionTarget.Enemy;
             case "o": return ActionTarget.OtherAlly;
             case "f": return ActionTarget.Friendly;
+            case "a": return ActionTarget.Any;
             default: return ActionTarget.NoTarget;
         }
     }

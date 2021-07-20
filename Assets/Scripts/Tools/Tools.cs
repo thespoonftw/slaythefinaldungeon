@@ -33,6 +33,9 @@ public class Tools : Singleton<Tools> {
         return (T)Enum.Parse(typeof(T), input);
     }
 
+    public static void LogError(string error) {
+        Debug.LogError(error);
+    }
 }
 
 

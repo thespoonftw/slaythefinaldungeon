@@ -18,6 +18,7 @@ public class TurnOrderView : MonoBehaviour {
     private void UpdateTurns(List<CombatantTurn> turns) {
         for (int i=0; i<TurnCalculator.NUMBER_OF_TURNS_SHOWN; i++) {
             turnCards[i].text = turns[i].combatant.name;
+            //turnCards[i].text = turns[i].combatant.name + " " + turns[i].time;
         }
     }
 }
