@@ -1,5 +1,0 @@
-﻿id,ai,targetting,active
-melee,i,m,dmg(t 5)
-advance,n,n,advance(1)
-weakmelee,i,m,dmg(t 5) buff(t 1 wea)
-spit,r,r,dmg(t 5)

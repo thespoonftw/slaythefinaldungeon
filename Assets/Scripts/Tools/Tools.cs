@@ -36,6 +36,10 @@ public class Tools : Singleton<Tools> {
     public static void LogError(string error) {
         Debug.LogError(error);
     }
+
+    public static int RandomSign() {
+        return UnityEngine.Random.Range(0, 2) * 2 - 1;
+    }
 }
 
 

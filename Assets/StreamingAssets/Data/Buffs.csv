@@ -1,7 +1,10 @@
 ﻿code,name,description,sprite,start or end
 str,Strengthened,Strength increased by 50%,2001,end
 wea,Weakened,Strength decreased by 33%,2002,end
-pro,Protected,Physical resistance increased by 50% (max 75%),2003,start
-vul,Vulnerable,Physical resistance decreased by 50% (min 0%),2004,start
-emp,Empowered,Magic increased by 50%,2005,end
-dam,Dampened,Magic decreased by 33%,2006,end
+pro,Protected,Physical resistance increased by 50% (max 100%),2003,start
+vul,Vulnerable,Physical resistance decreased by 33%,2004,start
+emp,Empowered,Magic increased by 50%,2001,end
+dam,Dampened,Magic decreased by 33%,2001,end
+has,Hastened,Speed increased by 50%,2001,start
+slo,Slowed,Speed decreased by 33%,2001,start
+tau,Taunted,Will try to attack the character which taunted it,2001,end

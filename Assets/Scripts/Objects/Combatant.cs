@@ -11,7 +11,8 @@ public class Combatant {
     public string name;
     public int str;
     public int magic;
-    public float speedFactor;
+    public float speedFactor => 100f / speed;
+    private int speed;
     public int fireResistance;
     public int coldResistance;
     public int shockResistance;
@@ -24,7 +25,7 @@ public class Combatant {
 
     public delegate void DamageEvent(int amount, DamageType type);
     public event DamageEvent OnDamage;
-    public EnemyData EnemyData => !isHero ? (EnemyData)data : null;
+    public MonsterData MonsterData => !isHero ? (MonsterData)data : null;
     public Hero HeroData => isHero ? (Hero)data : null;
     public EProperty<int> MaxHp = new EProperty<int>();
     public EProperty<int> CurrentHp = new EProperty<int>();
@@ -43,7 +44,7 @@ public class Combatant {
         MaxHp.Value = data.maxHp;
         str = data.str;
         magic = data.magic;
-        speedFactor = 100f / data.speed;
+        speed = data.speed;
         fireResistance = data.fireResistance;
         coldResistance = data.coldResistance;
         shockResistance = data.shockResistance;
@@ -51,7 +52,7 @@ public class Combatant {
         isUndead = data.isUndead;
 
         // below just for monsters
-        if (!(data is EnemyData)) { return; }
+        if (!(data is MonsterData)) { return; }
         name = data.name;
         CurrentHp.Value = data.maxHp;        
         view.Init(this);
@@ -61,7 +62,7 @@ public class Combatant {
 
         var resistanceMultiplier = 1f;
         switch(type) {
-            case DamageType.physical: { resistanceMultiplier = Mathf.Clamp(1 - (physicalResistance / 100f), 0.25f, 1f); break; }
+            case DamageType.physical: { resistanceMultiplier = Mathf.Max(1 - (physicalResistance / 100f), 0f); break; }
             case DamageType.heal: { resistanceMultiplier = isUndead ? 1.5f : -1; break; }
             case DamageType.fire: { resistanceMultiplier = 1 - (fireResistance / 100f); break; }
             case DamageType.cold: { resistanceMultiplier = 1 - (coldResistance / 100f); break; }
@@ -82,7 +83,7 @@ public class Combatant {
                 CombatMaster.Instance.KillHero((CombatantHero)this);
             } else {
                 Animation.Value = 2;
-                CombatMaster.Instance.KillEnemy(this);
+                CombatMaster.Instance.KillMonster(this);
             }
         } else {
             Animation.Value = 2;
@@ -98,11 +99,13 @@ public class Combatant {
             Buffs.Add(buff);
             switch (buff.data.type) {
                 case BuffType.pro: physicalResistance += 50; break;
-                case BuffType.vul: physicalResistance -= 50; break;
+                case BuffType.vul: physicalResistance -= 33; break;
                 case BuffType.str: str += Mathf.RoundToInt(data.str * 0.5f); break;
                 case BuffType.wea: str -= Mathf.RoundToInt(data.str * 0.333f); break;
                 case BuffType.emp: magic += Mathf.RoundToInt(data.magic * 0.5f); break;
                 case BuffType.dam: magic -= Mathf.RoundToInt(data.magic * 0.333f); break;
+                case BuffType.has: speed += Mathf.RoundToInt(data.speed * 0.5f); TurnCalculator.Instance.ReevaluateTurns(this); break;
+                case BuffType.slo: speed -= Mathf.RoundToInt(data.speed * 0.333f); TurnCalculator.Instance.ReevaluateTurns(this); break;
             }
 
         }
@@ -112,11 +115,13 @@ public class Combatant {
         Buffs.Remove(buff);
         switch (buff.data.type) {
             case BuffType.pro: physicalResistance -= 50; break;
-            case BuffType.vul: physicalResistance += 50; break;
+            case BuffType.vul: physicalResistance += 33; break;
             case BuffType.str: str -= Mathf.RoundToInt(data.str * 0.5f); break;
             case BuffType.wea: str += Mathf.RoundToInt(data.str * 0.333f); break;
             case BuffType.emp: magic -= Mathf.RoundToInt(data.magic * 0.5f); break;
             case BuffType.dam: magic += Mathf.RoundToInt(data.magic * 0.333f); break;
+            case BuffType.has: speed -= Mathf.RoundToInt(data.speed * 0.5f); TurnCalculator.Instance.ReevaluateTurns(this); break;
+            case BuffType.slo: speed += Mathf.RoundToInt(data.speed * 0.333f); TurnCalculator.Instance.ReevaluateTurns(this); break;
         }
     }
 
@@ -144,6 +149,14 @@ public class Combatant {
             case ScalingAttribute.Strength: return str;
             case ScalingAttribute.Magic: return magic;
         }
+    }
+
+    public bool HasBuff(BuffType type) {
+        return Buffs.List.Any(b => b.Type == type);
+    }
+
+    public Buff GetBuff(BuffType type) {
+        return Buffs.List.First(b => b.Type == type);
     }
     
 }

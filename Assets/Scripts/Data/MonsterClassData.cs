@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class EnemyClassData {
+public class MonsterClassData {
 
     public string id;
     public bool isUndead;
@@ -13,7 +13,7 @@ public class EnemyClassData {
     public int coldResistance;
     public int shockResistance;
 
-    public EnemyClassData(List<string> data) {
+    public MonsterClassData(List<string> data) {
         id = data[0];
         isUndead = data[1] == "Y";
         physicalResistance = Tools.ParseDataInt(data, 2);

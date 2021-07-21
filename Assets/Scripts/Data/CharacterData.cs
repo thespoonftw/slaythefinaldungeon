@@ -40,15 +40,12 @@ public class HeroData : CharacterData {
         startingDeck = data[9].Split(' ').Select(int.Parse).ToList();
     }
 }
-public class EnemyData : CharacterData {
-
-    //public ActionData action;
-    //public string enemyClassData;
+public class MonsterData : CharacterData {
 
     public string meleeActionId;
     public string rangedActionId;
 
-    public EnemyData(List<string> data) {
+    public MonsterData(List<string> data) {
         id = Tools.ParseDataInt(data, 0);
         name = data[1];
         spriteId = Tools.ParseDataInt(data, 2);
@@ -56,7 +53,7 @@ public class EnemyData : CharacterData {
         str = Tools.ParseDataInt(data, 4);
         magic = Tools.ParseDataInt(data, 5);
         speed = Tools.ParseDataInt(data, 6);
-        var eClass = Data.enemyClasses[data[7]];
+        var eClass = Data.monsterClasses[data[7]];
         physicalResistance = eClass.physicalResistance;
         fireResistance = eClass.fireResistance;
         coldResistance = eClass.coldResistance;

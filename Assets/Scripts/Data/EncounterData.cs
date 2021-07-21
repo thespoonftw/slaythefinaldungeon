@@ -8,7 +8,7 @@ public class EncounterData {
 
     public int id;
     public int length;
-    public int[,] enemies;
+    public int[,] monsters;
 
     public EncounterData(List<string> line1, List<string> line2, List<string> line3, List<string> line4) {
         id = Tools.ParseDataInt(line1, 0);
@@ -17,11 +17,11 @@ public class EncounterData {
         var row2 = parseRow(line3);
         var row3 = parseRow(line4);
 
-        enemies = new int[length, 3];
+        monsters = new int[length, 3];
         for (int i=0; i<length; i++) {
-            enemies[i, 0] = row1[i];
-            enemies[i, 1] = row2[i];
-            enemies[i, 2] = row3[i];
+            monsters[i, 0] = row1[i];
+            monsters[i, 1] = row2[i];
+            monsters[i, 2] = row3[i];
         }
     }
 

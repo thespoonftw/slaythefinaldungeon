@@ -11,6 +11,9 @@ public enum BuffType {
     vul,
     emp,
     dam,
+    has,
+    slo,
+    tau,
 }
 
 public class BuffData {

@@ -24,12 +24,9 @@ public class TurnCalculator : Singleton<TurnCalculator> {
         turns = new List<CombatantTurn>();
         foreach (var c in CombatMaster.Instance.activeCombatants) { 
             var initiative = c.speedFactor * UnityEngine.Random.Range(0f, 1f);
-            for (int i = 0; i<NUMBER_OF_TURNS_SHOWN; i++) {
-                turns.Add(new CombatantTurn(initiative + c.speedFactor * i, c));
-            }            
+            AddTurns(c, initiative);
         }
-        turns = turns.OrderBy(t => t.time).ToList();
-        OnUpdate?.Invoke(turns);
+        
     }
 
     public Combatant TakeTurn() {
@@ -47,8 +44,18 @@ public class TurnCalculator : Singleton<TurnCalculator> {
         OnUpdate?.Invoke(turns);
     }
 
+    public void ReevaluateTurns(Combatant c) {
+        var initiative = turns.First(t => t.combatant == c).time;
+        turns.RemoveAll(t => t.combatant == c);
+        AddTurns(c, initiative);
+    }
+
     public void AddCombatant(Combatant c) {
         var initiative = c.speedFactor * UnityEngine.Random.Range(0f, 1f) + turns[0].time;
+        AddTurns(c, initiative);
+    }
+
+    private void AddTurns(Combatant c, float initiative) {
         for (int i = 0; i < NUMBER_OF_TURNS_SHOWN; i++) {
             turns.Add(new CombatantTurn(initiative + c.speedFactor * i, c));
         }

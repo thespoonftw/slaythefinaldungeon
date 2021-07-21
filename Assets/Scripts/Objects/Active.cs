@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 public enum DamageType {
     none,
     physical,
-    piercing,
+    impact,
     fire,
     cold,
     shock,
@@ -20,16 +20,17 @@ public enum ActiveType {
     buff,
     wait,
     advance,
+    push,
+    pull,
 }
 
-public enum TargettingMode { 
+public enum ActiveTarget { 
     Target,
     Self,
-    AllMelee,
-    AllEnemies,
-    AllFriendly,
-    AllOtherFriendly,
-    RandomEnemy,
+    AllHeroes,
+    AllMonsters,
+    MonstersRow1,  
+    Adjacent,
 }
 
 public enum ScalingAttribute {
@@ -42,17 +43,11 @@ public class Active {
 
     public ActiveType type;
     public int amount;
-    public TargettingMode targettingMode;
+    public ActiveTarget targettingMode;
     public BuffType buff;
     public DamageType damageType;
 
-    public ScalingAttribute ScalingAttribute => (damageType == DamageType.physical || damageType == DamageType.piercing) ? ScalingAttribute.Strength : ScalingAttribute.Magic;
-
-    public Active(ActiveType type, TargettingMode targettingType, int amount) {
-        this.type = type;
-        this.targettingMode = targettingType;
-        this.amount = amount;
-    }
+    public ScalingAttribute ScalingAttribute => (damageType == DamageType.physical || damageType == DamageType.impact) ? ScalingAttribute.Strength : ScalingAttribute.Magic;
 
     public Active(string data) {
         var split = data.Split('(');
@@ -89,33 +84,47 @@ public class Active {
                 break;
             case "advance":
                 type = ActiveType.advance;
-                amount = int.Parse(parameters[0]);
+                break;
+            case "push":
+                type = ActiveType.push;
+                targettingMode = GetTargettingMode(parameters[0]);
+                break;
+            case "pull":
+                type = ActiveType.pull;
+                targettingMode = GetTargettingMode(parameters[0]);
                 break;
 
         }
     }
 
-    private TargettingMode GetTargettingMode(string s) {
-        switch (s) {
-            default: return TargettingMode.Target;
-            case "s": return TargettingMode.Self;
-            case "m": return TargettingMode.AllMelee;
-            case "e": return TargettingMode.AllEnemies;            
-            case "f": return TargettingMode.AllFriendly;
-            case "o": return TargettingMode.AllOtherFriendly;
-            case "re": return TargettingMode.RandomEnemy;
+    public static List<Active> GetActives(string input) {
+        var returner = new List<Active>();
+        string[] splitStrings = { ") ", ")" };
+        var split = input.Split(splitStrings, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var s in split) { returner.Add(new Active(s)); }
+        return returner;
+    }
 
+    private ActiveTarget GetTargettingMode(string s) {
+        switch (s) {
+            case "t": return ActiveTarget.Target;
+            case "s": return ActiveTarget.Self;
+            case "h": return ActiveTarget.AllHeroes;
+            case "e1": return ActiveTarget.MonstersRow1;            
+            case "e": return ActiveTarget.AllMonsters;
+            case "adj": return ActiveTarget.Adjacent;
+            default: Tools.LogError("Unknown Action Targetting Mode " + s); return ActiveTarget.Target;
         }
     }
 
     private DamageType getDamageType(string s) {
         switch (s) {
-            default: return DamageType.physical;
-            case "pierce": return DamageType.piercing;
+            case "impact": return DamageType.impact;
             case "fire": return DamageType.fire;
             case "cold": return DamageType.cold;
             case "shock": return DamageType.shock;
             case "heal": return DamageType.heal;
+            default: Tools.LogError("Unknown Damage Type " + s); return DamageType.physical;
         }
     }
 }

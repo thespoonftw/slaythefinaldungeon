@@ -76,11 +76,11 @@ public class CombatUI : Singleton<CombatUI> {
         CurrentHero.DrawHand(3);
         var lh = CurrentHero.HeroData.lhEquipment;
         var rh = CurrentHero.HeroData.rhEquipment;
-        if (lh != null && lh.actionType != null) { lhEquipmentCard.SetContent(lh.actionType, CurrentHero); }
-        if (rh != null && rh.actionType != null) { rhEquipmentCard.SetContent(rh.actionType, CurrentHero); }
-        card1.SetContent(CurrentHero.hand[0].active, CurrentHero);
-        card2.SetContent(CurrentHero.hand[1].active, CurrentHero);
-        card3.SetContent(CurrentHero.hand[2].active, CurrentHero);        
+        if (lh != null && lh.action != null) { lhEquipmentCard.SetContent(lh.action, CurrentHero); }
+        if (rh != null && rh.action != null) { rhEquipmentCard.SetContent(rh.action, CurrentHero); }
+        card1.SetContent(CurrentHero.hand[0].action, CurrentHero);
+        card2.SetContent(CurrentHero.hand[1].action, CurrentHero);
+        card3.SetContent(CurrentHero.hand[2].action, CurrentHero);        
         energyImage.SetActive(true);
         endTurnButton.SetActive(true);
         energyRemaining.Value = CurrentHero.HeroData.maxEnergy;
@@ -102,8 +102,7 @@ public class CombatUI : Singleton<CombatUI> {
     }
 
     public void UpdateAdvanceButton() {
-        var i = combatMaster.progressIndex + 1;
-        if (combatMaster.tiles[i, 0].occupant == null && combatMaster.tiles[i, 1].occupant == null && combatMaster.tiles[i, 2].occupant == null) {
+        if (combatMaster.CanHeroesAdvance()) {
             advanceButton.SetActive(true);
             holdButton.SetActive(true);
             endTurnButton.SetActive(false);
@@ -136,7 +135,7 @@ public class CombatUI : Singleton<CombatUI> {
         if (card.action.energyCost <= energyRemaining.Value) {
             SetTooltip(null);
             currentCard = card;
-            if (card.action.targettingMode == ActionTarget.NoTarget) {
+            if (card.action.targettingMode == HeroActionTarget.NoTarget) {
                 isHoldingCard = true;
             } else {
                 isAimingCard = true;
@@ -153,7 +152,7 @@ public class CombatUI : Singleton<CombatUI> {
             if (isHoldingCard) {
                 currentCard.transform.position = currentCard.originalPosition;
                 if (Input.mousePosition.y > 100) {
-                    combatMaster.PerformAction(currentCard.action, CurrentHero);
+                    combatMaster.PerformHeroAction(currentCard.action, CurrentHero);
                     energyRemaining.Value -= currentCard.action.energyCost;
                     currentCard.SetContent(null);
                 }
@@ -161,7 +160,7 @@ public class CombatUI : Singleton<CombatUI> {
 
             if (isAimingCard) {
                 if (currentTarget != null) {
-                    combatMaster.PerformAction(currentCard.action, CurrentHero, currentTarget);
+                    combatMaster.PerformHeroAction(currentCard.action, CurrentHero, currentTarget);
                     energyRemaining.Value -= currentCard.action.energyCost;
                     currentCard.SetContent(null);
                 }
@@ -179,16 +178,12 @@ public class CombatUI : Singleton<CombatUI> {
 
     public void TargetCombatant(Combatant combatant) {
         if (!isAimingCard) { return; }
-        if (combatant != null) {            
-            if ((
-                (currentCard.action.targettingMode == ActionTarget.Any) ||
-                (currentCard.action.targettingMode == ActionTarget.Ranged && combatant != CurrentHero) ||
-                (currentCard.action.targettingMode == ActionTarget.Enemy && combatMaster.ActiveMonsters.Contains(combatant)) ||
-                (currentCard.action.targettingMode == ActionTarget.Friendly && combatMaster.LivingHeroes.Contains(combatant)) ||
-                (currentCard.action.targettingMode == ActionTarget.OtherAlly && combatMaster.LivingHeroes.Contains(combatant) && combatant != CurrentHero) ||
-                (currentCard.action.targettingMode == ActionTarget.Melee && combatant.x <= combatMaster.progressIndex + 1 && combatant != CurrentHero) ||
-                (currentCard.action.targettingMode == ActionTarget.Touch && combatant.x <= combatMaster.progressIndex + 1)
-                ) && combatant.x <= combatMaster.progressIndex + 3
+        if (combatant != null) {
+            var dist = combatant.x - combatMaster.progressIndex;
+            if (
+                (currentCard.action.targettingMode == HeroActionTarget.Range3 && dist <= 3) ||
+                (currentCard.action.targettingMode == HeroActionTarget.Range2 && dist <= 2) ||
+                (currentCard.action.targettingMode == HeroActionTarget.Range1 && dist <= 1)
                 ) {
                 validTarget.SetActive(true);
                 validTarget.transform.position = combatant.GameObject.transform.position + new Vector3(0, 0, -1);

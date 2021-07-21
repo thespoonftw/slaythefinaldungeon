@@ -5,20 +5,20 @@ using UnityEngine;
 public class Data : MonoBehaviour {
 
     public static Dictionary<int, HeroData> heroes;
-    public static Dictionary<int, EnemyData> enemies;
+    public static Dictionary<int, MonsterData> monsters;
     public static Dictionary<int, EncounterData> encounters;
     public static Dictionary<int, Sprite> sprites;
     public static Dictionary<int, EquipmentData> equipment;
     public static Dictionary<BuffType, BuffData> buffs;
     public static Dictionary<int, CardData> cards;
-    public static Dictionary<string, EnemyClassData> enemyClasses;
-    public static Dictionary<string, EnemyActionData> enemyActions;
+    public static Dictionary<string, MonsterClassData> monsterClasses;
+    public static Dictionary<string, MonsterActionData> monsterActions;
 
     public void LoadData() {
         heroes = CsvLoader.LoadInt<HeroData>("Heroes");
-        enemyClasses = CsvLoader.LoadString<EnemyClassData>("EnemyClass"); // must load before enemies
-        enemyActions = CsvLoader.LoadString<EnemyActionData>("EnemyActions"); // must load before enemies
-        enemies = CsvLoader.LoadInt<EnemyData>("Enemies");
+        monsterClasses = CsvLoader.LoadString<MonsterClassData>("MonsterClass"); // must load before monsters
+        monsterActions = CsvLoader.LoadString<MonsterActionData>("MonsterActions"); // must load before monsters
+        monsters = CsvLoader.LoadInt<MonsterData>("Monsters");
         encounters = CsvLoader.LoadEncounters("Encounters");
         equipment = CsvLoader.LoadInt<EquipmentData>("Equipment");
         buffs = CsvLoader.LoadBuffs("Buffs");

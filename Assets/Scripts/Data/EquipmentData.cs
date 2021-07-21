@@ -9,7 +9,7 @@ public class EquipmentData {
     public int id;  
     public string name;
     public string description;
-    public ActionData actionType;
+    public HeroActionData action;
     public List<Passive> passives;
 
     public EquipmentData(List<string> data) {
@@ -17,9 +17,9 @@ public class EquipmentData {
         name = data[1];
         description = data[2];
         var cost = Tools.ParseDataInt(data, 3);
-        var targetting = ActionData.GetTargettingMode(data[4]);
+        var targetting = HeroActionData.GetTargettingMode(data[4]);
         var actives = data[5];
-        actionType = ActionData.LoadAction(cost, actives, name, targetting, description);
+        action = HeroActionData.LoadAction(cost, actives, name, targetting, description);
         passives = Passive.LoadPassives(data[6]);
     }
 }

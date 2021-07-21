@@ -11,10 +11,10 @@ public class CardView : MonoBehaviour {
 
     private CombatantHero hero;
 
-    public ActionData action { get; set; }
+    public HeroActionData action { get; set; }
     public Vector3 originalPosition { get; set; }
 
-    public void SetContent(ActionData action, CombatantHero hero = null) {
+    public void SetContent(HeroActionData action, CombatantHero hero = null) {
         this.action = action;
         if (action == null) {
             text.text = "";
