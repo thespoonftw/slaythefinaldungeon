@@ -54,11 +54,11 @@ public class CombatMaster : Singleton<CombatMaster> {
     }
 
     private void StartTurn() {
-        CurrentCombatant = turnCalculator.TakeTurn();
+        CurrentCombatant = turnCalculator.GetCurrentTurn();
         CurrentCombatant.StartOfTurnBuffs();
         CombatUI.Instance.MoveActive();
-        if (!CurrentCombatant.isHero) {            
-            Tools.DelayMethod(0.5f, () => PerformMonsterAction(CurrentCombatant));
+        if (!CurrentCombatant.isHero) {
+            StartCoroutine(PerformMonsterAction(CurrentCombatant));
             Tools.DelayMethod(1.5f, EndTurn);
         } else {
             CombatUI.Instance.StartTurn();
@@ -67,6 +67,7 @@ public class CombatMaster : Singleton<CombatMaster> {
 
     public void EndTurn() {        
         CurrentCombatant.EndOfTurnBuffs();
+        turnCalculator.RemoveTurn();
         StartTurn();
     }
 
@@ -83,15 +84,15 @@ public class CombatMaster : Singleton<CombatMaster> {
         foreach (var c in activeCombatants) { Destroy(c.GameObject); }
     }
 
-    public void PerformHeroAction(HeroActionData action, Combatant source, Combatant target = null) {
+    public IEnumerator PerformHeroAction(HeroActionData action, Combatant source, Combatant target = null) {
         source.Animation.Value = 1;
         foreach (var a in action.actives) {
-            StartCoroutine(ActiveCoroutine(a, source, target));
+            yield return ActiveCoroutine(a, source, target);
         }
         CheckForBattleEnd();
     }
 
-    public void PerformMonsterAction(Combatant monster) {
+    public IEnumerator PerformMonsterAction(Combatant monster) {
         monster.Animation.Value = 1;
 
         string actionIndex;
@@ -117,7 +118,7 @@ public class CombatMaster : Singleton<CombatMaster> {
         }
         
         foreach (var a in action.actives) {
-            StartCoroutine(ActiveCoroutine(a, monster, target));
+            yield return ActiveCoroutine(a, monster, target);
         }
         CheckForBattleEnd();
     }
@@ -130,7 +131,7 @@ public class CombatMaster : Singleton<CombatMaster> {
             yield break;
 
         } else if (a.type == ActiveType.advance) {
-            if (source.isHero) { HeroesAdvance(); }
+            if (source.isHero) { yield return HeroesAdvanceCoroutine(); }
             else { AdvanceCombatant(CurrentCombatant); }            
             yield break;
         }
@@ -200,13 +201,23 @@ public class CombatMaster : Singleton<CombatMaster> {
         return returner;
     }
 
-    public void HeroesAdvance() {
-        if (!CanHeroesAdvance()) { return; }
+    public IEnumerator RepeatHeroesAdvance() {
+        yield return HeroesAdvanceCoroutine();
+        while (ActiveMonsters.Count == 0) {
+            yield return HeroesAdvanceCoroutine();
+        }
+        EndTurn();
+        yield return null;
+    }
+
+    public IEnumerator HeroesAdvanceCoroutine() {
+        if (!CanHeroesAdvance()) { yield break; }
+        yield return new WaitForSeconds(0.5f);
         progressIndex++;
         AdvanceCombatant(allHeroes[0]);
         AdvanceCombatant(allHeroes[1]);
         AdvanceCombatant(allHeroes[2]);        
-        Camera.main.transform.parent.position = new Vector3(2.5f * progressIndex, 0, 0);
+        Camera.main.transform.parent.position = new Vector3(2.5f * progressIndex, 0, 0);        
     }
 
     public void AdvanceCombatant(Combatant combatant) {

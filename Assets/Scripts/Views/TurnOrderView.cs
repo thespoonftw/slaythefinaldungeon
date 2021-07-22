@@ -7,7 +7,7 @@ public class TurnOrderView : MonoBehaviour {
 
     [SerializeField] List<TextMeshProUGUI> turnCards;
 
-    public void Start() {
+    public void Awake() {
         TurnCalculator.Instance.OnUpdate += UpdateTurns;
     }
 

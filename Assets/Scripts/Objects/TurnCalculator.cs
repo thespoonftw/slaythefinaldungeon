@@ -29,14 +29,17 @@ public class TurnCalculator : Singleton<TurnCalculator> {
         
     }
 
-    public Combatant TakeTurn() {
+    public Combatant GetCurrentTurn() {
+        return turns[0].combatant;
+    }
+
+    public void RemoveTurn() {
         var turn = turns[0];
         var c = turns[0].combatant;
-        OnUpdate?.Invoke(turns);
         turns.RemoveAt(0);
         turns.Add(new CombatantTurn(turn.time + c.speedFactor * NUMBER_OF_TURNS_SHOWN, c));
         turns = turns.OrderBy(t => t.time).ToList();
-        return c;
+        OnUpdate?.Invoke(turns);
     }
 
     public void KillCombatant(Combatant c) {

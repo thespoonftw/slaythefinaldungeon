@@ -70,6 +70,7 @@ public class CombatUI : Singleton<CombatUI> {
     public void MoveActive() {        
         activeHeroSelector.SetActive(true);
         activeHeroSelector.transform.position = combatMaster.CurrentCombatant.GameObject.transform.position;
+        activeHeroSelector.transform.parent = combatMaster.CurrentCombatant.GameObject.transform;
     }
 
     public void StartTurn() {        
@@ -97,8 +98,7 @@ public class CombatUI : Singleton<CombatUI> {
     public void AdvanceButtonClicked() {
         DisableUI();
         CurrentHero.DiscardHand();
-        combatMaster.HeroesAdvance();
-        combatMaster.EndTurn();
+        StartCoroutine(combatMaster.RepeatHeroesAdvance());        
     }
 
     public void UpdateAdvanceButton() {
@@ -152,7 +152,7 @@ public class CombatUI : Singleton<CombatUI> {
             if (isHoldingCard) {
                 currentCard.transform.position = currentCard.originalPosition;
                 if (Input.mousePosition.y > 100) {
-                    combatMaster.PerformHeroAction(currentCard.action, CurrentHero);
+                    StartCoroutine(combatMaster.PerformHeroAction(currentCard.action, CurrentHero));
                     energyRemaining.Value -= currentCard.action.energyCost;
                     currentCard.SetContent(null);
                 }
@@ -160,7 +160,7 @@ public class CombatUI : Singleton<CombatUI> {
 
             if (isAimingCard) {
                 if (currentTarget != null) {
-                    combatMaster.PerformHeroAction(currentCard.action, CurrentHero, currentTarget);
+                    StartCoroutine(combatMaster.PerformHeroAction(currentCard.action, CurrentHero, currentTarget));
                     energyRemaining.Value -= currentCard.action.energyCost;
                     currentCard.SetContent(null);
                 }
