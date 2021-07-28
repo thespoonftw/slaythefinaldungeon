@@ -47,8 +47,10 @@ public class TurnCalculator : Singleton<TurnCalculator> {
         OnUpdate?.Invoke(turns);
     }
 
-    public void ReevaluateTurns(Combatant c) {
-        var initiative = turns.First(t => t.combatant == c).time;
+    public void AdjustSpeed(Combatant c, float oldSpeed, float newSpeed) {
+        var currentTime = turns[0].time;
+        var firstTime = turns.First(t => t.combatant == c).time;
+        var initiative = (firstTime - currentTime) * (newSpeed / oldSpeed) + currentTime;
         turns.RemoveAll(t => t.combatant == c);
         AddTurns(c, initiative);
     }

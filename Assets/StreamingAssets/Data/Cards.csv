@@ -15,6 +15,6 @@
 301,Blinding Spark,# [shock] and 1 [wea] 3 range,2,3,dmg(t 6 shock) buff(t 1 wea)
 302,Smokescreen,1 [protect] all heroes,1,0,buff(h 1 pro)
 303,Lay on Hands,# [heal] 1 range,1,1,heal(t 8)
-304,Scorching Ray,# [fire] 3 range then #2 [fire] self,2,3,dmg(t 8 fire) wait(500) dmg(s 3 fire)
+304,Scorching Ray,# [fire] 3 range then #3 [fire] self,2,3,dmg(t 8 fire) wait(500) dmg(s 3 fire)
 305,Power Drain,1 [dampen] 3 range then 1 [empower] self,1,3,buff(t 1 dam) buff(s 1 emp)
 306,Magic Missile,# [impact] 3 range,1,3,dmg(t 5 impact)

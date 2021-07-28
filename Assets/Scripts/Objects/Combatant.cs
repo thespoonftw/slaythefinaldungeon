@@ -12,7 +12,7 @@ public class Combatant {
     public int str;
     public int magic;
     public float speedFactor => 100f / speed;
-    private int speed;
+    private float speed;
     public int fireResistance;
     public int coldResistance;
     public int shockResistance;
@@ -104,8 +104,8 @@ public class Combatant {
                 case BuffType.wea: str -= Mathf.RoundToInt(data.str * 0.333f); break;
                 case BuffType.emp: magic += Mathf.RoundToInt(data.magic * 0.5f); break;
                 case BuffType.dam: magic -= Mathf.RoundToInt(data.magic * 0.333f); break;
-                case BuffType.has: speed += Mathf.RoundToInt(data.speed * 0.5f); TurnCalculator.Instance.ReevaluateTurns(this); break;
-                case BuffType.slo: speed -= Mathf.RoundToInt(data.speed * 0.333f); TurnCalculator.Instance.ReevaluateTurns(this); break;
+                case BuffType.has: AdjustSpeed(+Mathf.RoundToInt(data.speed * 0.5f)); break;
+                case BuffType.slo: AdjustSpeed(-Mathf.RoundToInt(data.speed * 0.333f)); break;
             }
 
         }
@@ -120,8 +120,8 @@ public class Combatant {
             case BuffType.wea: str += Mathf.RoundToInt(data.str * 0.333f); break;
             case BuffType.emp: magic -= Mathf.RoundToInt(data.magic * 0.5f); break;
             case BuffType.dam: magic += Mathf.RoundToInt(data.magic * 0.333f); break;
-            case BuffType.has: speed -= Mathf.RoundToInt(data.speed * 0.5f); TurnCalculator.Instance.ReevaluateTurns(this); break;
-            case BuffType.slo: speed += Mathf.RoundToInt(data.speed * 0.333f); TurnCalculator.Instance.ReevaluateTurns(this); break;
+            case BuffType.has: AdjustSpeed(-Mathf.RoundToInt(data.speed * 0.5f)); break;
+            case BuffType.slo: AdjustSpeed(+Mathf.RoundToInt(data.speed * 0.333f)); break;
         }
     }
 
@@ -157,6 +157,11 @@ public class Combatant {
 
     public Buff GetBuff(BuffType type) {
         return Buffs.List.First(b => b.Type == type);
+    }
+
+    private void AdjustSpeed(float deltaSpeed) {
+        TurnCalculator.Instance.AdjustSpeed(this, speed, speed + deltaSpeed);
+        speed += deltaSpeed;        
     }
     
 }

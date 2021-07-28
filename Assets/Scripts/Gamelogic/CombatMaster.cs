@@ -150,10 +150,10 @@ public class CombatMaster : Singleton<CombatMaster> {
         } else if (a.targettingMode == ActiveTarget.Adjacent) {
             var x = target.x;
             var y = target.y;
-            if (x > 0) { targets.Add(tiles[x - 1, y].occupant); }
-            if (x < 2) { targets.Add(tiles[x + 1, y].occupant); }
             if (y > 0) { targets.Add(tiles[x, y - 1].occupant); }
-            if (y < tiles.GetLength(1)) { targets.Add(tiles[x, y + 1].occupant); }
+            if (y < 2) { targets.Add(tiles[x, y + 1].occupant); }
+            if (x > 0) { targets.Add(tiles[x - 1, y].occupant); }
+            if (x < tiles.GetLength(1)) { targets.Add(tiles[x + 1, y].occupant); }
             targets.RemoveAll(i => i == null);
         }
 
