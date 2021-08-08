@@ -19,6 +19,7 @@ public class TurnCalculator : Singleton<TurnCalculator> {
     private List<CombatantTurn> turns;
     public static int NUMBER_OF_TURNS_SHOWN = 10;
     public event Action<List<CombatantTurn>> OnUpdate;
+    private Dictionary<string, Combatant> monsterNames = new Dictionary<string, Combatant>();
 
     public void Init() {
         turns = new List<CombatantTurn>();
@@ -57,6 +58,14 @@ public class TurnCalculator : Singleton<TurnCalculator> {
     }
 
     public void AddCombatant(Combatant c) {
+        if (!c.isHero) {
+            int i = 1;
+            while (monsterNames.ContainsKey(c.name + " " + i)) {
+                i++;
+            }
+            monsterNames.Add(c.name + " " + i, c);
+            c.name = c.name + " " + i; 
+        }
         var initiative = c.speedFactor * UnityEngine.Random.Range(0f, 1f) + turns[0].time;
         AddTurns(c, initiative);
     }

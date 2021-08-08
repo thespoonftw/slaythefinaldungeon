@@ -128,17 +128,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6565660263440633930, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
   m_PrefabInstance: {fileID: 914328646}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &79539111 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 914328646}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &104991804 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6565660263440633930, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -288,28 +277,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc7d51684c601b144800e7542768d099, type: 3}
---- !u!114 &229236775 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 613551662}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &269232672 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 269315775}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &269315775
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -403,7 +370,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 8
+      value: TurnCard 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -521,17 +488,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc7d51684c601b144800e7542768d099, type: 3}
---- !u!114 &374961976 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 1946087917}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &383753931
 GameObject:
   m_ObjectHideFlags: 0
@@ -1000,7 +956,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 3
+      value: TurnCard 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -1347,17 +1303,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 836124751}
   m_CullTransparentMesh: 1
---- !u!114 &853629971 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 1741141374}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &857474388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1538,21 +1483,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 4
+      value: TurnCard 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
---- !u!114 &928827890 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 1021850897}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &985187035
 GameObject:
   m_ObjectHideFlags: 0
@@ -1678,7 +1612,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 7
+      value: TurnCard 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -1958,17 +1892,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1087639828}
   m_CullTransparentMesh: 1
---- !u!114 &1156261524 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 1380274517}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1156933126
 GameObject:
   m_ObjectHideFlags: 0
@@ -2112,17 +2035,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc7d51684c601b144800e7542768d099, type: 3}
---- !u!114 &1296330200 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 1565359026}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1314725129
 GameObject:
   m_ObjectHideFlags: 0
@@ -2601,7 +2513,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 5
+      value: TurnCard 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -2643,17 +2555,6 @@ RectTransform:
   m_AnchoredPosition: {x: 4.5, y: 0}
   m_SizeDelta: {x: -9, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1429905756 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 1463210550}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1448231878
 GameObject:
   m_ObjectHideFlags: 0
@@ -2853,7 +2754,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 6
+      value: TurnCard 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -2866,7 +2767,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1468025321}
-  - component: {fileID: 1468025322}
   m_Layer: 5
   m_Name: TurnCards
   m_TagString: Untagged
@@ -2903,29 +2803,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1468025322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1468025320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9b20f5ba50285141ab85b02673f2a81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turnCards:
-  - {fileID: 1897398186}
-  - {fileID: 374961976}
-  - {fileID: 229236775}
-  - {fileID: 79539111}
-  - {fileID: 1156261524}
-  - {fileID: 1429905756}
-  - {fileID: 928827890}
-  - {fileID: 269232672}
-  - {fileID: 1296330200}
-  - {fileID: 853629971}
 --- !u!1 &1537462654
 GameObject:
   m_ObjectHideFlags: 0
@@ -3240,7 +3117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 9
+      value: TurnCard 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -3432,7 +3309,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 10
+      value: TurnCard 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -3891,17 +3768,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1885265773}
   m_CullTransparentMesh: 1
---- !u!114 &1897398186 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1981898146841442644, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
-  m_PrefabInstance: {fileID: 6565660264202408650}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1946087917
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3995,7 +3861,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 2
+      value: TurnCard 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
@@ -4430,7 +4296,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6565660263440634037, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}
       propertyPath: m_Name
-      value: TurnCard 1
+      value: TurnCard 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d09277460827d849a4eee26520cd9b9, type: 3}

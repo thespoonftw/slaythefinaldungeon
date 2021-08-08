@@ -60,7 +60,7 @@ public class CombatMaster : Singleton<CombatMaster> {
     }
 
     private void StartTurn() {
-        CurrentCombatant = turnCalculator.GetCurrentTurn();
+        CurrentCombatant = turnCalculator.GetCurrentTurn();        
         CurrentCombatant.StartOfTurnBuffs();
         combatUI.MoveActive();
         if (!CurrentCombatant.isHero) {
@@ -69,6 +69,7 @@ public class CombatMaster : Singleton<CombatMaster> {
         } else {
             combatUI.StartTurn();
         }
+        combatUI.UpdateAdvanceButton();
     }
 
     public void EndTurn() {
@@ -265,6 +266,7 @@ public class CombatMaster : Singleton<CombatMaster> {
 
     private void MoveToTile(Combatant combatant, int x, int y) {
         if (tiles[x, y].occupant != null) { Debug.LogError("Tried to move onto a tile but it was blocked"); return; }
+        if (!combatant.IsAlive) { return; }
         var currentX = combatant.x;
         var currentY = combatant.y;        
         combatant.x = x;

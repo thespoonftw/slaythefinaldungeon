@@ -90,8 +90,7 @@ public class CombatUI : Singleton<CombatUI> {
         energyImage.SetActive(true);
         endTurnButton.SetActive(true);
         energyRemaining.Value = CurrentHero.HeroData.maxEnergy;
-        energyMax.Value = CurrentHero.HeroData.maxEnergy;
-        UpdateAdvanceButton();
+        energyMax.Value = CurrentHero.HeroData.maxEnergy;        
     }
 
     public void EndTurnClicked() {
@@ -107,10 +106,16 @@ public class CombatUI : Singleton<CombatUI> {
     }
 
     public void UpdateAdvanceButton() {
-        if (combatMaster.CanHeroesAdvance()) {
+        if (!combatMaster.CurrentCombatant.isHero) {
+            advanceButton.SetActive(false);
+            holdButton.SetActive(false);
+            endTurnButton.SetActive(false);
+
+        } else if (combatMaster.CanHeroesAdvance()) {
             advanceButton.SetActive(true);
             holdButton.SetActive(true);
             endTurnButton.SetActive(false);
+
         } else {
             advanceButton.SetActive(false);
             holdButton.SetActive(false);
@@ -202,6 +207,15 @@ public class CombatUI : Singleton<CombatUI> {
             invalidTarget.SetActive(false);
             currentTarget = null;
         }
+    }
+
+    public void TurnOrderHighlight(Combatant combatant) {
+        if (combatant != null) {
+            validTarget.SetActive(true);
+            validTarget.transform.position = combatant.GameObject.transform.position + new Vector3(0, 0, -1);
+        } else {
+            validTarget.SetActive(false);
+        }        
     }
 
 

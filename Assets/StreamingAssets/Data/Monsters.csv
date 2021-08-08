@@ -1,4 +1,7 @@
 ﻿id,name,sprite,HP,str,magic,speed,class,melee,ranged
 1,goblin,1,20,7,10,12,goblin,melee,advance
-2,skeleton,2,40,12,10,8,skeleton,weakmelee regenerate,advance
-3,toad,3,30,16,10,6,amphibian,retreat melee,spit
+2,skeleton,2,40,12,10,8,skeleton,weakmelee,advance
+3,toad,3,30,16,10,6,amphibian,spit,spit
+4,orb,4,5,10,3,10,mech,melee,advance
+5,orb knight,5,40,10,10,10,mech,cleave,advance
+6,orboomer,6,5,10,10,10,mech,boom,advance
