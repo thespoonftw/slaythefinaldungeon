@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 public enum MonsterActionTarget {
     NoTarget,
-    Random,
+    RandomHero,
     Infront,
+    LowestHero,
+    HighestHero,
+    RandomMonster,
 }
 
 public class MonsterActionData {
@@ -26,7 +29,10 @@ public class MonsterActionData {
         switch (s) {
             case "n": return MonsterActionTarget.NoTarget;
             case "i": return MonsterActionTarget.Infront;
-            case "r": return MonsterActionTarget.Random;
+            case "r": return MonsterActionTarget.RandomHero;
+            case "l": return MonsterActionTarget.LowestHero;
+            case "h": return MonsterActionTarget.HighestHero;
+            case "m": return MonsterActionTarget.RandomMonster;
             default: Tools.LogError("Unknown Hero Action Target " + s); return MonsterActionTarget.NoTarget;
         }
     }

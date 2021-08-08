@@ -42,8 +42,8 @@ public class HeroData : CharacterData {
 }
 public class MonsterData : CharacterData {
 
-    public string meleeActionId;
-    public string rangedActionId;
+    public List<MonsterActionData> meleeActions;
+    public List<MonsterActionData> rangedActions;
 
     public MonsterData(List<string> data) {
         id = Tools.ParseDataInt(data, 0);
@@ -59,8 +59,8 @@ public class MonsterData : CharacterData {
         coldResistance = eClass.coldResistance;
         shockResistance = eClass.shockResistance;
         isUndead = eClass.isUndead;
-        meleeActionId = data[8];
-        rangedActionId = data[9];
+        meleeActions = data[8].Split(' ').Select(x => Data.monsterActions[x]).ToList();
+        rangedActions = data[9].Split(' ').Select(x => Data.monsterActions[x]).ToList();
     }
 }
 

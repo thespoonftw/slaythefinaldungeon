@@ -58,24 +58,13 @@ public class GameMaster : Singleton<GameMaster> {
         }
     }
 
-    /*
-    public void BattleWon() {
-        CombatUI.Instance.DisableUI();
-        centreText.text = "Battle Won";
-        encounterIndex++;
-        if (Data.encounters.ContainsKey(encounterIndex)) {
-
-            Tools.DelayMethod(2f, () => CombatMaster.Instance.Setup(encounterIndex));
-            Tools.DelayMethod(2f, () => centreText.text = "");
-        } else {
-            GameOver();
-        }        
-    }
-    */
-
     public void GameOver() {
         CombatUI.Instance.DisableUI();
-        centreText.text = "Game Over";
+        SetCentreText("Game Over");
+    }
+
+    public void SetCentreText(string text) {
+        centreText.text = text;
     }
 
 }

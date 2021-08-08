@@ -50,12 +50,6 @@ public class Combatant {
         shockResistance = data.shockResistance;
         physicalResistance = data.physicalResistance;
         isUndead = data.isUndead;
-
-        // below just for monsters
-        if (!(data is MonsterData)) { return; }
-        name = data.name;
-        CurrentHp.Value = data.maxHp;        
-        view.Init(this);
     }
 
     public void TakeDamage(float amount, DamageType type) {
@@ -78,13 +72,8 @@ public class Combatant {
         }
 
         if (CurrentHp.Value <= 0) {
-            if (isHero) {
-                Animation.Value = 3;
-                CombatMaster.Instance.KillHero((CombatantHero)this);
-            } else {
-                Animation.Value = 2;
-                CombatMaster.Instance.KillMonster(this);
-            }
+            Animation.Value = isHero ? 3 : 2;
+            CombatMaster.Instance.KillCombatant(this);
         } else {
             Animation.Value = 2;
         }

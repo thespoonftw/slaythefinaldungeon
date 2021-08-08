@@ -28,6 +28,12 @@ public class CombatMaster : Singleton<CombatMaster> {
     public List<CombatantHero> CombatantHeroes => activeCombatants.Where(e => e.isHero).Cast<CombatantHero>().ToList();
     public Combatant CurrentCombatant { get; set; }
 
+    private CombatUI combatUI;
+
+    private void Awake() {
+        combatUI = CombatUI.Instance;        
+    }
+
     public void Setup(int encounterIndex) {
         var heroData = GameMaster.Instance.heroes;
 
@@ -56,16 +62,17 @@ public class CombatMaster : Singleton<CombatMaster> {
     private void StartTurn() {
         CurrentCombatant = turnCalculator.GetCurrentTurn();
         CurrentCombatant.StartOfTurnBuffs();
-        CombatUI.Instance.MoveActive();
+        combatUI.MoveActive();
         if (!CurrentCombatant.isHero) {
-            StartCoroutine(PerformMonsterAction(CurrentCombatant));
+            StartCoroutine(PerformMonsterAction((CombatantMonster)CurrentCombatant));
             Tools.DelayMethod(1.5f, EndTurn);
         } else {
-            CombatUI.Instance.StartTurn();
+            combatUI.StartTurn();
         }
     }
 
-    public void EndTurn() {        
+    public void EndTurn() {
+        combatUI.SetEnemyActionBanner(null);
         CurrentCombatant.EndOfTurnBuffs();
         turnCalculator.RemoveTurn();
         StartTurn();
@@ -79,7 +86,7 @@ public class CombatMaster : Singleton<CombatMaster> {
     }
 
     private void CleanUp() {
-        CombatUI.Instance.DisableUI();
+        combatUI.DisableUI();
         foreach (var h in CombatantHeroes) { h.SaveHero(); }
         foreach (var c in activeCombatants) { Destroy(c.GameObject); }
     }
@@ -92,25 +99,33 @@ public class CombatMaster : Singleton<CombatMaster> {
         CheckForBattleEnd();
     }
 
-    public IEnumerator PerformMonsterAction(Combatant monster) {
+    public IEnumerator PerformMonsterAction(CombatantMonster monster) {
         monster.Animation.Value = 1;
 
-        string actionIndex;
+        MonsterActionData action;
         var dist = CurrentCombatant.x - progressIndex;
-        if (dist > 3) { 
-            actionIndex = "advance";
+        if (dist > 3) {
+            action = Data.monsterActions["advance"];
         } else if (dist > 1 && dist <= 3) {
-            actionIndex = CurrentCombatant.MonsterData.rangedActionId;
+            action = monster.CurrentRangedAction;
+            monster.IncrementRangedIndex();
         } else {
-            actionIndex = CurrentCombatant.MonsterData.meleeActionId;
+            action = monster.CurrentMeleeAction;
+            monster.IncrementMeleeIndex();
         }
-        var action = Data.monsterActions[actionIndex];
+        combatUI.SetEnemyActionBanner(action.id);
 
         Combatant target = null;
         if (monster.HasBuff(BuffType.tau)) {
             target = monster.GetBuff(BuffType.tau).source;
-        } else if (action.targettingMode == MonsterActionTarget.Random) {
+        } else if (action.targettingMode == MonsterActionTarget.RandomHero) {
             target = Tools.RandomFromList(LivingHeroes);
+        } else if (action.targettingMode == MonsterActionTarget.HighestHero) {
+            target = LivingHeroes.OrderByDescending(x => x.CurrentHp).First();
+        } else if (action.targettingMode == MonsterActionTarget.LowestHero) {
+            target = LivingHeroes.OrderByDescending(x => x.CurrentHp).Last();
+        } else if (action.targettingMode == MonsterActionTarget.RandomMonster) {
+            target = Tools.RandomFromList(ActiveMonsters);
         } else if (action.targettingMode == MonsterActionTarget.Infront) {
             var infront = tiles[progressIndex, CurrentCombatant.y].occupant;
             if (activeCombatants.Contains(infront)) { target = infront; }
@@ -134,6 +149,9 @@ public class CombatMaster : Singleton<CombatMaster> {
             if (source.isHero) { yield return HeroesAdvanceCoroutine(); }
             else { AdvanceCombatant(CurrentCombatant); }            
             yield break;
+        } else if (a.type == ActiveType.retreat) {
+            if (!source.isHero) { AdvanceCombatant(CurrentCombatant, true); }
+            yield break;
         }
 
         var targets = new List<Combatant>();
@@ -153,7 +171,7 @@ public class CombatMaster : Singleton<CombatMaster> {
             if (y > 0) { targets.Add(tiles[x, y - 1].occupant); }
             if (y < 2) { targets.Add(tiles[x, y + 1].occupant); }
             if (x > 0) { targets.Add(tiles[x - 1, y].occupant); }
-            if (x < tiles.GetLength(1)) { targets.Add(tiles[x + 1, y].occupant); }
+            if (x < tiles.GetLength(0)) { targets.Add(tiles[x + 1, y].occupant); }
             targets.RemoveAll(i => i == null);
         }
 
@@ -165,9 +183,9 @@ public class CombatMaster : Singleton<CombatMaster> {
             } else if (a.type == ActiveType.buff) {
                 t.ApplyBuff(new Buff(source, target, a.amount, Data.buffs[a.buff]));
             } else if (a.type == ActiveType.push) {
-                if (tiles[t.x + 1, t.y].occupant == null) { MoveToTile(t, t.x + 1, t.y); }
+                if (!t.isHero && tiles[t.x + 1, t.y].occupant == null) { MoveToTile(t, t.x + 1, t.y); }
             } else if (a.type == ActiveType.pull) {
-                if (tiles[t.x - 1, t.y].occupant == null) { MoveToTile(t, t.x - 1, t.y); }
+                if (!t.isHero && tiles[t.x - 1, t.y].occupant == null) { MoveToTile(t, t.x - 1, t.y); }
             }
         }
     }
@@ -196,7 +214,7 @@ public class CombatMaster : Singleton<CombatMaster> {
         pos.z = 0;
         var go = Instantiate(characterPrefab, pos, Quaternion.identity);
         var view = go.GetComponent<CombatantView>();
-        var returner = new Combatant(view, data, x, y);
+        var returner = new CombatantMonster(view, data, x, y);
         tiles[x, y].occupant = returner;
         return returner;
     }
@@ -220,26 +238,27 @@ public class CombatMaster : Singleton<CombatMaster> {
         Camera.main.transform.parent.position = new Vector3(2.5f * progressIndex, 0, 0);        
     }
 
-    public void AdvanceCombatant(Combatant combatant) {
+    public void AdvanceCombatant(Combatant combatant, bool isRetreat = false) {
         var x = combatant.x;
-        var y = combatant.y;
-        tiles[x, y].occupant = null;
+        var y = combatant.y;       
         if (combatant.isHero) {
-            MoveToTile(combatant, x + 1, y);
+            var mod = isRetreat ? -1 : 1;
+            MoveToTile(combatant, x + mod, y);
 
         } else {
+            var mod = isRetreat ? -1 : 1;
             var randomSign = Tools.RandomSign();
-            if (tiles[x - 1, y].occupant == null) {
-                MoveToTile(combatant, x - 1, y);
-            } else if (y == 0 && tiles[x - 1, y + 1].occupant == null) {
-                MoveToTile(combatant, x - 1, y + 1);
-            } else if (y == 2 && tiles[x - 1, y - 1].occupant == null) {
-                MoveToTile(combatant, x - 1, y - 1);
-            } else if (y == 1 && tiles[x - 1, y + randomSign].occupant == null) {
-                MoveToTile(combatant, x - 1, y + randomSign);
-            } else if (y == 1 && tiles[x - 1, y - randomSign].occupant == null) {
-                MoveToTile(combatant, x - 1, y - randomSign);
-            } 
+            if (tiles[x - mod, y].occupant == null) {
+                MoveToTile(combatant, x - mod, y);
+            } else if (y == 0 && tiles[x - mod, y + 1].occupant == null) {
+                MoveToTile(combatant, x - mod, y + 1);
+            } else if (y == 2 && tiles[x - mod, y - 1].occupant == null) {
+                MoveToTile(combatant, x - mod, y - 1);
+            } else if (y == 1 && tiles[x - mod, y + randomSign].occupant == null) {
+                MoveToTile(combatant, x - mod, y + randomSign);
+            } else if (y == 1 && tiles[x - mod, y - randomSign].occupant == null) {
+                MoveToTile(combatant, x - mod, y - randomSign);
+            }
         }        
         AddNewActiveMonsters();        
     }
@@ -255,6 +274,7 @@ public class CombatMaster : Singleton<CombatMaster> {
         var pos = tiles[x, y].gameObject.transform.position;
         pos.z = 0;
         combatant.GameObject.transform.position = pos;
+        combatUI.UpdateAdvanceButton();
     }
 
     private void AddNewActiveMonsters(int recursiveIndex = 0) {
@@ -265,16 +285,15 @@ public class CombatMaster : Singleton<CombatMaster> {
         if (tiles[i,0].occupant != null || tiles[i, 1].occupant != null || tiles[i, 2].occupant != null) { AddNewActiveMonsters(recursiveIndex + 1); }
     }
 
-    public void KillMonster(Combatant combatant) {
+    public void KillCombatant(Combatant combatant) {
+        if (combatant == CurrentCombatant) { combatUI.UnparentActive(); }
         turnCalculator.KillCombatant(combatant);
         tiles[combatant.x, combatant.y].occupant = null;
-        CombatUI.Instance.UpdateAdvanceButton();
-        Tools.DelayMethod(0.5f, () => Destroy(combatant.GameObject));        
-    }
 
-    public void KillHero(CombatantHero combatant) {
-        turnCalculator.KillCombatant(combatant);
-        tiles[combatant.x, combatant.y].occupant = null;
+        if (!combatant.isHero) {
+            combatUI.UpdateAdvanceButton();
+            Tools.DelayMethod(0.5f, () => Destroy(combatant.GameObject));
+        }        
     }
 
     public bool CanHeroesAdvance() {

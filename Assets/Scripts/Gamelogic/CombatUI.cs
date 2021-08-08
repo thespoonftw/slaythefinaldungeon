@@ -16,6 +16,7 @@ public class CombatUI : Singleton<CombatUI> {
 
     [SerializeField] GameObject targetSelector;
     [SerializeField] GameObject activeHeroSelector;
+    [SerializeField] GameObject enemyActionBanner;
     
     [SerializeField] GameObject energyImage;
     [SerializeField] GameObject tooltip;
@@ -65,6 +66,10 @@ public class CombatUI : Singleton<CombatUI> {
             cardAimerLine.SetPosition(0, currentCard.transform.position);
             cardAimerLine.SetPosition(1, pos);
         }
+    }
+
+    public void UnparentActive() {
+        activeHeroSelector.transform.parent = null;
     }
 
     public void MoveActive() {        
@@ -206,6 +211,15 @@ public class CombatUI : Singleton<CombatUI> {
         } else {
             tooltip.GetComponentInChildren<TextMeshProUGUI>().text = text;
             tooltip.SetActive(true);
+        }
+    }
+
+    public void SetEnemyActionBanner(string text) {
+        if (text == null || text == "") {
+            enemyActionBanner.SetActive(false);
+        } else {
+            enemyActionBanner.SetActive(true);
+            enemyActionBanner.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = text;
         }
     }
 

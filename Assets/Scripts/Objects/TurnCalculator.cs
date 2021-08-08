@@ -48,9 +48,10 @@ public class TurnCalculator : Singleton<TurnCalculator> {
     }
 
     public void AdjustSpeed(Combatant c, float oldSpeed, float newSpeed) {
+        var firstTurn = turns.First(t => t.combatant == c);
+        if (firstTurn == null) { Debug.LogError("Turn not found for " + c.name); return; }
         var currentTime = turns[0].time;
-        var firstTime = turns.First(t => t.combatant == c).time;
-        var initiative = (firstTime - currentTime) * (newSpeed / oldSpeed) + currentTime;
+        var initiative = (firstTurn.time - currentTime) * (newSpeed / oldSpeed) + currentTime;
         turns.RemoveAll(t => t.combatant == c);
         AddTurns(c, initiative);
     }

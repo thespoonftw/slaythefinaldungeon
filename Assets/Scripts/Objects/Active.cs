@@ -20,6 +20,7 @@ public enum ActiveType {
     buff,
     wait,
     advance,
+    retreat,
     push,
     pull,
 }
@@ -84,6 +85,9 @@ public class Active {
                 break;
             case "advance":
                 type = ActiveType.advance;
+                break;
+            case "retreat":
+                type = ActiveType.retreat;
                 break;
             case "push":
                 type = ActiveType.push;
