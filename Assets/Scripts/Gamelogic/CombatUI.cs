@@ -12,21 +12,16 @@ public class CombatUI : Singleton<CombatUI> {
     [SerializeField] CardView card1;
     [SerializeField] CardView card2;
     [SerializeField] CardView card3;
-    [SerializeField] TextMeshProUGUI energy;
+    
 
     [SerializeField] GameObject targetSelector;
     [SerializeField] GameObject activeHeroSelector;
     [SerializeField] GameObject enemyActionBanner;
     
-    [SerializeField] GameObject energyImage;
     [SerializeField] GameObject tooltip;
     [SerializeField] LineRenderer cardAimerLine;
     [SerializeField] GameObject validTarget;
     [SerializeField] GameObject invalidTarget;
-
-    [SerializeField] GameObject endTurnButton;
-    [SerializeField] GameObject advanceButton;
-    [SerializeField] GameObject holdButton;
 
     private CombatMaster combatMaster;
     private CardView currentCard;
@@ -34,8 +29,10 @@ public class CombatUI : Singleton<CombatUI> {
     private bool isAimingCard = false;
     private Combatant currentTarget;
 
-    private EProperty<int> energyRemaining = new EProperty<int>();
-    private EProperty<int> energyMax = new EProperty<int>();
+    public EProperty<bool> IsHeroUIEnabled = new EProperty<bool>();
+    public EProperty<bool> IsAdvanceAllowed = new EProperty<bool>();
+    public EProperty<int> EnergyRemaining = new EProperty<int>();
+    public EProperty<int> EnergyMax = new EProperty<int>();
 
     private CombatantHero CurrentHero => combatMaster.CurrentCombatant.isHero ? (CombatantHero)combatMaster.CurrentCombatant : null;
 
@@ -43,15 +40,13 @@ public class CombatUI : Singleton<CombatUI> {
     private void Start() {
         combatMaster = CombatMaster.Instance;
         Inputs.OnLeftMouseUp += OnLeftMouseUp;
-        energyRemaining.OnUpdate += UpdateEnergyRemaining;
-        energyMax.OnUpdate += UpdateEnergyRemaining;
-        DisableUI();
+        
+        EndHeroTurn();
     }
 
     private void OnDestroy() {
         Inputs.OnLeftMouseUp -= OnLeftMouseUp;
-        energyRemaining.OnUpdate -= UpdateEnergyRemaining;
-        energyMax.OnUpdate += UpdateEnergyRemaining;
+        
     }
 
     private void Update() {
@@ -78,7 +73,7 @@ public class CombatUI : Singleton<CombatUI> {
         activeHeroSelector.transform.parent = combatMaster.CurrentCombatant.GameObject.transform;
     }
 
-    public void StartTurn() {        
+    public void StartHeroTurn() {        
         CurrentHero.DrawHand(3);
         var lh = CurrentHero.HeroData.lhEquipment;
         var rh = CurrentHero.HeroData.rhEquipment;
@@ -87,62 +82,27 @@ public class CombatUI : Singleton<CombatUI> {
         card1.SetContent(CurrentHero.hand[0].action, CurrentHero);
         card2.SetContent(CurrentHero.hand[1].action, CurrentHero);
         card3.SetContent(CurrentHero.hand[2].action, CurrentHero);        
-        energyImage.SetActive(true);
-        endTurnButton.SetActive(true);
-        energyRemaining.Value = CurrentHero.HeroData.maxEnergy;
-        energyMax.Value = CurrentHero.HeroData.maxEnergy;        
+        
+        IsHeroUIEnabled.Value = true;
+        IsAdvanceAllowed.Value = combatMaster.CanHeroesAdvance;
+        EnergyRemaining.Value = CurrentHero.HeroData.maxEnergy;
+        EnergyMax.Value = CurrentHero.HeroData.maxEnergy;        
     }
 
-    public void EndTurnClicked() {
-        DisableUI();
+    public void EndHeroTurn() {
         CurrentHero.DiscardHand();
-        combatMaster.EndTurn();
-    }
-
-    public void AdvanceButtonClicked() {
-        DisableUI();
-        CurrentHero.DiscardHand();
-        StartCoroutine(combatMaster.RepeatHeroesAdvance());        
-    }
-
-    public void UpdateAdvanceButton() {
-        if (!combatMaster.CurrentCombatant.isHero) {
-            advanceButton.SetActive(false);
-            holdButton.SetActive(false);
-            endTurnButton.SetActive(false);
-
-        } else if (combatMaster.CanHeroesAdvance()) {
-            advanceButton.SetActive(true);
-            holdButton.SetActive(true);
-            endTurnButton.SetActive(false);
-
-        } else {
-            advanceButton.SetActive(false);
-            holdButton.SetActive(false);
-            endTurnButton.SetActive(true);
-        }       
-    }
-
-    public void DisableUI() {
+        IsHeroUIEnabled.Value = false;
         lhEquipmentCard.SetContent(null);
         rhEquipmentCard.SetContent(null);
         card1.SetContent(null);
         card2.SetContent(null);
         card3.SetContent(null);
-        endTurnButton.SetActive(false);
-        energyImage.SetActive(false);
         tooltip.SetActive(false);
         activeHeroSelector.SetActive(false);
-        advanceButton.SetActive(false);
-        holdButton.SetActive(false);
-    }
-
-    private void UpdateEnergyRemaining() {
-        energy.text = energyRemaining.Value + " / " + energyMax.Value;
     }
 
     public void TryPickupCard(CardView card) {
-        if (card.action.energyCost <= energyRemaining.Value) {
+        if (card.action.energyCost <= EnergyRemaining.Value) {
             SetTooltip(null);
             currentCard = card;
             if (card.action.targettingMode == HeroActionTarget.NoTarget) {
@@ -151,9 +111,7 @@ public class CombatUI : Singleton<CombatUI> {
                 isAimingCard = true;
                 cardAimerLine.enabled = true;
             }
-            
         }
-        
     }
 
     private void OnLeftMouseUp() {
@@ -163,7 +121,7 @@ public class CombatUI : Singleton<CombatUI> {
                 currentCard.transform.position = currentCard.originalPosition;
                 if (Input.mousePosition.y > 100) {
                     StartCoroutine(combatMaster.PerformHeroAction(currentCard.action, CurrentHero));
-                    energyRemaining.Value -= currentCard.action.energyCost;
+                    EnergyRemaining.Value -= currentCard.action.energyCost;
                     currentCard.SetContent(null);
                 }
             }
@@ -171,7 +129,7 @@ public class CombatUI : Singleton<CombatUI> {
             if (isAimingCard) {
                 if (currentTarget != null) {
                     StartCoroutine(combatMaster.PerformHeroAction(currentCard.action, CurrentHero, currentTarget));
-                    energyRemaining.Value -= currentCard.action.energyCost;
+                    EnergyRemaining.Value -= currentCard.action.energyCost;
                     currentCard.SetContent(null);
                 }
             }

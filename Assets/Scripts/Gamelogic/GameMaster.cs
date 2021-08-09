@@ -59,7 +59,7 @@ public class GameMaster : Singleton<GameMaster> {
     }
 
     public void GameOver() {
-        CombatUI.Instance.DisableUI();
+        CombatUI.Instance.EndHeroTurn();
         SetCentreText("Game Over");
     }
 
