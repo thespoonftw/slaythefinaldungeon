@@ -14,13 +14,13 @@ public class EndTurnView : MonoBehaviour {
     private bool isShown = false;
 
     private void Start() {
-        CombatUI.Instance.IsAdvanceAllowed.OnNewValue += CanAdvance;
-        CombatUI.Instance.IsHeroUIEnabled.OnNewValue += ShowHide;
+        CombatUIController.Instance.IsAdvanceAllowed.OnNewValue += CanAdvance;
+        CombatUIController.Instance.IsHeroUIEnabled.OnNewValue += ShowHide;
     }
 
     private void OnDestroy() {
-        CombatUI.Instance.IsAdvanceAllowed.OnNewValue += CanAdvance;
-        CombatUI.Instance.IsHeroUIEnabled.OnNewValue -= ShowHide;
+        CombatUIController.Instance.IsAdvanceAllowed.OnNewValue += CanAdvance;
+        CombatUIController.Instance.IsHeroUIEnabled.OnNewValue -= ShowHide;
     }
 
     private void CanAdvance(bool canAdvance) {
@@ -41,12 +41,12 @@ public class EndTurnView : MonoBehaviour {
     }
 
     public void EndTurnClicked() {
-        CombatUI.Instance.EndHeroTurn();
-        CombatMaster.Instance.EndTurn();
+        CombatUIController.Instance.EndHeroTurn();
+        CombatController.Instance.EndTurn();
     }
 
     public void AdvanceButtonClicked() {
-        CombatUI.Instance.EndHeroTurn();
-        StartCoroutine(CombatMaster.Instance.RepeatHeroesAdvance());
+        CombatUIController.Instance.EndHeroTurn();
+        StartCoroutine(CombatController.Instance.RepeatHeroesAdvance());
     }
 }

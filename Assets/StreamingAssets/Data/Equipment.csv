@@ -1,6 +1,6 @@
 ﻿id,name,description,cost,range,active,passive
 1,Sword,# [physical] 1 range,1,1,dmg(t 6),
 2,Shield,,,,,hp(20)
-3,Bow,# [physical] 3 range,1,3,dmg(t 4),
+3,Bow,# [physical] 3 range,1,3,dmg(t 4),cunning(1)
 4,Flame Wand,# [fire] 3 range,1,3,dmg(t 4 fire),energy(1)
 5,Holy Symbol,# [heal] 3 range,1,3,heal(t 4),

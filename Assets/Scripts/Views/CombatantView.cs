@@ -100,11 +100,11 @@ public class CombatantView : MonoBehaviour {
     }
 
     private void OnMouseEnter() {
-        CombatUI.Instance.TargetCombatant(model);
+        CombatUIController.Instance.HoveredCombatant.Value = model;
     }
 
     private void OnMouseExit() {
-        CombatUI.Instance.TargetCombatant(null);
+        CombatUIController.Instance.HoveredCombatant.Value = null;
     }
 
 

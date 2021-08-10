@@ -22,7 +22,7 @@ public class GameMaster : Singleton<GameMaster> {
             if (hero.lhEquipment != null) { hero.lhEquipment.passives.ForEach(p => EquipmentStats(hero, p)); }
             if (hero.rhEquipment != null) { hero.rhEquipment.passives.ForEach(p => EquipmentStats(hero, p)); }
         }
-        CombatMaster.Instance.Setup(encounterIndex);
+        CombatController.Instance.Setup(encounterIndex);
     }
 
     public void EquipmentStats(Hero hero, Passive passive) {
@@ -43,6 +43,9 @@ public class GameMaster : Singleton<GameMaster> {
             case PassiveType.speed:
                 hero.speed += passive.amount;
                 break;
+            case PassiveType.cunning:
+                hero.cunning += passive.amount;
+                break;
             case PassiveType.physical:
                 hero.physicalResistance += passive.amount;
                 break;
@@ -59,7 +62,7 @@ public class GameMaster : Singleton<GameMaster> {
     }
 
     public void GameOver() {
-        CombatUI.Instance.EndHeroTurn();
+        CombatUIController.Instance.EndHeroTurn();
         SetCentreText("Game Over");
     }
 

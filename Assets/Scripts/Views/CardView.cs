@@ -10,11 +10,13 @@ public class CardView : MonoBehaviour {
     [SerializeField] SpriteRenderer sprite;
 
     private CombatantHero hero;
+    private HandController cardsView;
 
     public HeroActionData action { get; set; }
     public Vector3 originalPosition { get; set; }
 
-    public void SetContent(HeroActionData action, CombatantHero hero = null) {
+    public void Init(HandController cardsView, HeroActionData action, CombatantHero hero = null) {
+        this.cardsView = cardsView;
         this.action = action;
         if (action == null) {
             text.text = "";
@@ -48,15 +50,15 @@ public class CardView : MonoBehaviour {
     }
 
     private void OnMouseEnter() {
-        CombatUI.Instance.SetTooltip(GetCardDescription());
+        CombatUIController.Instance.SetTooltip(GetCardDescription());
     }
 
     private void OnMouseExit() {
-        CombatUI.Instance.SetTooltip(null);
+        CombatUIController.Instance.SetTooltip(null);
     }
 
     private void OnMouseDown() {
         originalPosition = transform.position;
-        CombatUI.Instance.TryPickupCard(this);
+        cardsView.TryPickupCard(this);
     }
 }

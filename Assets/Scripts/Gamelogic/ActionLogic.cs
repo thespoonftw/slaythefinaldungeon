@@ -17,12 +17,12 @@ public class ActionLogic {
 
     public Tile[,] Tiles => combatMaster.tiles;
 
-    private CombatMaster combatMaster;
-    private CombatUI combatUI;
+    private CombatController combatMaster;
+    private CombatUIController combatUI;
 
     public ActionLogic() {
-        combatMaster = CombatMaster.Instance;
-        combatUI = CombatUI.Instance;
+        combatMaster = CombatController.Instance;
+        combatUI = CombatUIController.Instance;
     }        
 
     public IEnumerator PerformMonsterAction(CombatantMonster monster) {

@@ -10,23 +10,23 @@ public class EnergyView : MonoBehaviour {
     [SerializeField] Image background;
 
     private void Start() {
-        CombatUI.Instance.EnergyRemaining.OnUpdate += UpdateEnergyRemaining;
-        CombatUI.Instance.EnergyMax.OnUpdate += UpdateEnergyRemaining;
-        CombatUI.Instance.IsHeroUIEnabled.OnNewValue += ShowHide;
+        CombatUIController.Instance.EnergyRemaining.OnUpdate += UpdateEnergyRemaining;
+        CombatUIController.Instance.EnergyMax.OnUpdate += UpdateEnergyRemaining;
+        CombatUIController.Instance.IsHeroUIEnabled.OnNewValue += ShowHide;
     }
 
     private void OnDestroy() {
-        CombatUI.Instance.EnergyRemaining.OnUpdate -= UpdateEnergyRemaining;
-        CombatUI.Instance.EnergyMax.OnUpdate += UpdateEnergyRemaining;
-        CombatUI.Instance.IsHeroUIEnabled.OnNewValue -= ShowHide;
+        CombatUIController.Instance.EnergyRemaining.OnUpdate -= UpdateEnergyRemaining;
+        CombatUIController.Instance.EnergyMax.OnUpdate += UpdateEnergyRemaining;
+        CombatUIController.Instance.IsHeroUIEnabled.OnNewValue -= ShowHide;
     }
 
     private void UpdateEnergyRemaining() {
-        textMesh.text = CombatUI.Instance.EnergyRemaining.Value + " / " + CombatUI.Instance.EnergyMax.Value;
+        textMesh.text = CombatUIController.Instance.EnergyRemaining.Value + " / " + CombatUIController.Instance.EnergyMax.Value;
     }
 
     private void ShowHide(bool isShown) {
-        textMesh.enabled = false;
-        background.enabled = false;
+        textMesh.enabled = isShown;
+        background.enabled = isShown;
     }
 }

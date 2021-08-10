@@ -10,6 +10,7 @@ public enum PassiveType {
     strength,
     magic,
     speed,
+    cunning,
     physical,
     fire,
     cold,

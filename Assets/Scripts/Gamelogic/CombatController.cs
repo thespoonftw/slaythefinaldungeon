@@ -4,7 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class CombatMaster : Singleton<CombatMaster> {
+public class CombatController : Singleton<CombatController> {
 
     [SerializeField] GameObject characterPrefab;
     [SerializeField] GameObject tilePrefab;
@@ -28,11 +28,11 @@ public class CombatMaster : Singleton<CombatMaster> {
     public Combatant CurrentCombatant { get; set; }
     public bool CanHeroesAdvance => tiles[progressIndex + 1, 0].occupant == null && tiles[progressIndex + 1, 1].occupant == null && tiles[progressIndex + 1, 2].occupant == null;
 
-    private CombatUI combatUI;
+    private CombatUIController combatUI;
     private ActionLogic actionLogic;
 
     private void Awake() {
-        combatUI = CombatUI.Instance;
+        combatUI = CombatUIController.Instance;
         actionLogic = new ActionLogic();
     }
 

@@ -27,12 +27,12 @@ public class TurnOrderCardView : MonoBehaviour {
     }
 
     public void MouseEnter() {
-        CombatUI.Instance.TurnOrderHighlight(combatant);
+        CombatUIController.Instance.TurnOrderHighlight(combatant);
         GetComponent<Image>().color = Color.green;
     }
 
     public void MouseExit() {
-        CombatUI.Instance.TurnOrderHighlight(null);
+        CombatUIController.Instance.TurnOrderHighlight(null);
         GetComponent<Image>().color = Color.white;
     }
 }

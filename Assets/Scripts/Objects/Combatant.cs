@@ -73,7 +73,7 @@ public class Combatant {
 
         if (CurrentHp.Value <= 0) {
             Animation.Value = isHero ? 3 : 2;
-            CombatMaster.Instance.KillCombatant(this);
+            CombatController.Instance.KillCombatant(this);
         } else {
             Animation.Value = 2;
         }

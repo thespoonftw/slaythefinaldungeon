@@ -23,7 +23,7 @@ public class TurnCalculator : Singleton<TurnCalculator> {
 
     public void Init() {
         turns = new List<CombatantTurn>();
-        foreach (var c in CombatMaster.Instance.activeCombatants) { 
+        foreach (var c in CombatController.Instance.activeCombatants) { 
             var initiative = c.speedFactor * UnityEngine.Random.Range(0f, 1f);
             AddTurns(c, initiative);
         }
