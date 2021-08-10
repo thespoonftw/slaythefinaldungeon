@@ -7,11 +7,10 @@ using UnityEngine.UI;
 
 public class HandController : Singleton<HandController> {
 
-    [SerializeField] GameObject equip1;
-    [SerializeField] GameObject equip2;
-    [SerializeField] GameObject hand1;
-    [SerializeField] GameObject hand2;
-    [SerializeField] GameObject hand3;
+    [SerializeField] GameObject equip1Slot;
+    [SerializeField] GameObject equip2Slot;
+
+    [SerializeField] List<GameObject> cardSlots;
 
     [SerializeField] LineRenderer cardAimerLine;
     [SerializeField] GameObject validTarget;
@@ -24,11 +23,16 @@ public class HandController : Singleton<HandController> {
     private bool isHoldingCard = false;
     private bool isAimingCard = false;
     private Combatant currentTarget;
-    public List<CardData> hand = new List<CardData>();
+   
     private CombatantHero hero;
 
     public List<CardData> DrawDeck => hero.drawDeck;
     public List<CardData> DiscardPile => hero.discardPile;
+
+    private CardView lhEquipmentCard;
+    private CardView rhEquipmentCard;
+    public List<CardData> hand = new List<CardData>();
+    private List<CardView> cardViews = new List<CardView>();
 
     private void Start() {
         combatMaster = CombatController.Instance;
@@ -43,24 +47,20 @@ public class HandController : Singleton<HandController> {
 
     }
 
-    public void StartTurn(CombatantHero hero, int handSize) {
+    public void StartHandTurn(CombatantHero hero, int handSize) {
         this.hero = hero;
         var lh = hero.HeroData.lhEquipment;
         var rh = hero.HeroData.rhEquipment;
-        if (lh != null && lh.action != null) { CreateCard(equip1, lh.action); }
-        if (rh != null && rh.action != null) { CreateCard(equip2, rh.action); }
+        if (lh != null && lh.action != null) { lhEquipmentCard = CreateCard(equip1Slot, lh.action); }
+        if (rh != null && rh.action != null) { rhEquipmentCard = CreateCard(equip2Slot, rh.action); }
         for (int i = 0; i < handSize; i++) { DrawCard(); }
     }
 
-    private void CreateCard(GameObject location, HeroActionData action) {
-        var go = Instantiate(cardPrefab, location.transform.position, Quaternion.identity, location.transform);
-        var view = go.GetComponent<CardView>();
-        view.Init(this, action, hero);
-    }
-
-    public void DiscardHand() {
+    public void EndHandTurn() {
         DiscardPile.AddRange(hand);
         hand.Clear();
+        Destroy(lhEquipmentCard);
+        Destroy(rhEquipmentCard);
     }
 
     public void DrawCard() {
@@ -71,21 +71,37 @@ public class HandController : Singleton<HandController> {
         var randomCard = DrawDeck[Random.Range(0, DrawDeck.Count)];
         hand.Add(randomCard);
         DrawDeck.Remove(randomCard);
+        UpdateHand();
     }
 
-    /*
-    public void EndHeroTurn() {
-        CurrentHero.DiscardHand();
-        IsHeroUIEnabled.Value = false;
-        lhEquipmentCard.SetContent(null);
-        rhEquipmentCard.SetContent(null);
-        card1.SetContent(null);
-        card2.SetContent(null);
-        card3.SetContent(null);
-        tooltip.SetActive(false);
-        activeHeroSelector.SetActive(false);
+    public void DiscardCard(CardView card) {
+        if (card == lhEquipmentCard || card == rhEquipmentCard) {
+            Destroy(card);
+        } else {
+            var handIndex = cardViews.IndexOf(card);
+            hero.discardPile.Add(hand[handIndex]);
+            hand.RemoveAt(handIndex);
+            UpdateHand();
+        }
     }
-    */
+
+    private void UpdateHand() {
+        foreach (var c in cardViews) {
+            Destroy(c);
+        }
+        for (int i=0; i<hand.Count; i++) {
+            cardViews.Add(CreateCard(cardSlots[i], hand[i].action));
+        }
+    }
+
+    private CardView CreateCard(GameObject location, HeroActionData action) {
+        var go = Instantiate(cardPrefab, location.transform.position, Quaternion.identity, location.transform);
+        var view = go.GetComponent<CardView>();
+        view.Init(this, action, hero);
+        return view;
+    }
+
+    
 
     private void Update() {
         if (currentCard != null && isHoldingCard) {
@@ -121,14 +137,14 @@ public class HandController : Singleton<HandController> {
                 currentCard.transform.position = currentCard.originalPosition;
                 if (Input.mousePosition.y > 100) {
                     combatUI.UseCard(currentCard.action, null);
-                    currentCard.Init(this, null);
+                    DiscardCard(currentCard);
                 }
             }
 
             if (isAimingCard) {
                 if (currentTarget != null) {
                     combatUI.UseCard(currentCard.action, currentTarget);
-                    currentCard.Init(this, null);
+                    DiscardCard(currentCard);
                 }
             }
             cardAimerLine.enabled = false;
@@ -163,14 +179,5 @@ public class HandController : Singleton<HandController> {
             invalidTarget.SetActive(false);
             currentTarget = null;
         }
-    }
-
-    public void TurnOrderHighlight(Combatant combatant) {
-        if (combatant != null) {
-            validTarget.SetActive(true);
-            validTarget.transform.position = combatant.GameObject.transform.position + new Vector3(0, 0, -1);
-        } else {
-            validTarget.SetActive(false);
-        }        
     }
 }

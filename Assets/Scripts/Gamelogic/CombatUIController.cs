@@ -47,7 +47,7 @@ public class CombatUIController : Singleton<CombatUIController> {
     }
 
     public void StartHeroTurn() {
-        handController.StartTurn(CurrentHero, 3);
+        handController.StartHandTurn(CurrentHero, CurrentHero.HeroData.cunning);
         IsHeroUIEnabled.Value = true;
         IsAdvanceAllowed.Value = combatController.CanHeroesAdvance;
         EnergyRemaining.Value = CurrentHero.HeroData.maxEnergy;
@@ -55,7 +55,7 @@ public class CombatUIController : Singleton<CombatUIController> {
     }
 
     public void EndHeroTurn() {
-        handController.DiscardHand();
+        handController.EndHandTurn();
         IsHeroUIEnabled.Value = false;
         tooltip.SetActive(false);
         activeHeroSelector.SetActive(false);

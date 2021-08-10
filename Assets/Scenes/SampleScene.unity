@@ -1428,7 +1428,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 940214678}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.75, y: -5, z: 10}
+  m_LocalPosition: {x: 2, y: -5, z: 10}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children: []
   m_Father: {fileID: 1778683782}
@@ -1979,7 +1979,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1233875756}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.5, y: -5, z: 10}
+  m_LocalPosition: {x: 4.5, y: -5, z: 10}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children: []
   m_Father: {fileID: 1778683782}
@@ -3132,7 +3132,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1712494074}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: -5, z: 10}
+  m_LocalPosition: {x: -0.5, y: -5, z: 10}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children: []
   m_Father: {fileID: 1778683782}
@@ -3358,6 +3358,7 @@ Transform:
   - {fileID: 1712494075}
   - {fileID: 940214679}
   - {fileID: 1233875757}
+  - {fileID: 1783161107}
   m_Father: {fileID: 519420032}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3373,15 +3374,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7e2cf26026b78a4a902513edbd51064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equip1: {fileID: 1430779573}
-  equip2: {fileID: 1193832683}
-  hand1: {fileID: 1712494074}
-  hand2: {fileID: 940214678}
-  hand3: {fileID: 1233875756}
+  equip1Slot: {fileID: 1430779573}
+  equip2Slot: {fileID: 1193832683}
+  cardSlots:
+  - {fileID: 1712494074}
+  - {fileID: 940214678}
+  - {fileID: 1233875756}
+  - {fileID: 1783161106}
   cardAimerLine: {fileID: 1332706263}
   validTarget: {fileID: 2028961545}
   invalidTarget: {fileID: 985187035}
   cardPrefab: {fileID: 8669235580966227108, guid: dc7d51684c601b144800e7542768d099, type: 3}
+--- !u!1 &1783161106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1783161107}
+  m_Layer: 0
+  m_Name: Hand 4 Slot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1783161107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783161106}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 7, y: -5, z: 10}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_Children: []
+  m_Father: {fileID: 1778683782}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1807289495
 GameObject:
   m_ObjectHideFlags: 0

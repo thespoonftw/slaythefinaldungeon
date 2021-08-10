@@ -15,21 +15,14 @@ public class CardView : MonoBehaviour {
     public HeroActionData action { get; set; }
     public Vector3 originalPosition { get; set; }
 
-    public void Init(HandController cardsView, HeroActionData action, CombatantHero hero = null) {
+    public void Init(HandController cardsView, HeroActionData action, CombatantHero hero) {
         this.cardsView = cardsView;
         this.action = action;
-        if (action == null) {
-            text.text = "";
-            text.enabled = false;
-            sprite.enabled = false;
-            GetComponent<Collider>().enabled = false;
-        } else {
-            this.hero = hero;
-            text.text = "[" + action.energyCost + "] " + action.name;
-            text.enabled = true;
-            sprite.enabled = true;
-            GetComponent<Collider>().enabled = true;
-        }
+        this.hero = hero;
+        text.text = "[" + action.energyCost + "] " + action.name;
+        text.enabled = true;
+        sprite.enabled = true;
+        GetComponent<Collider>().enabled = true;
     }
 
     private string GetCardDescription() {
