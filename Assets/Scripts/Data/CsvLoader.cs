@@ -33,7 +33,7 @@ public class CsvLoader {
                 var key = int.Parse(data[i][0]);
                 returner.Add(key, value);
             } catch {
-                GameMaster.Instance.SetCentreText("Problem in " + filename + " line " + (i+1));
+                GameMaster.Instance.SetCentreText("Problem in " + filename + " line " + (i+2));
             }            
         }
         returner.Add(0, default);

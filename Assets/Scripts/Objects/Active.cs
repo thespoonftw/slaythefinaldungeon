@@ -23,6 +23,7 @@ public enum ActiveType {
     retreat,
     push,
     pull,
+    draw,
 }
 
 public enum ActiveTarget { 
@@ -56,8 +57,7 @@ public class Active {
 
         switch (split[0]) {
             default:
-                Tools.LogError("unknown active " + split[0]);
-                break;
+                throw new Exception("Unknown active type");
             case "dmg":
                 type = ActiveType.dmg;
                 targettingMode = GetTargettingMode(parameters[0]);
@@ -97,7 +97,10 @@ public class Active {
                 type = ActiveType.pull;
                 targettingMode = GetTargettingMode(parameters[0]);
                 break;
-
+            case "draw":
+                type = ActiveType.draw;
+                amount = int.Parse(parameters[0]);
+                break;
         }
     }
 

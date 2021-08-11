@@ -7,8 +7,12 @@ using UnityEngine.UI;
 
 public class HandController : Singleton<HandController> {
 
-    [SerializeField] GameObject equip1Slot;
-    [SerializeField] GameObject equip2Slot;
+    [SerializeField] Transform equip1Slot;
+    [SerializeField] Transform equip2Slot;
+    [SerializeField] Transform handSlot;
+
+    private static float MAX_HAND_WIDTH = 7f;
+    private static float MAX_CARD_SEPERATION = 2.5f;
 
     [SerializeField] List<GameObject> cardSlots;
 
@@ -51,16 +55,16 @@ public class HandController : Singleton<HandController> {
         this.hero = hero;
         var lh = hero.HeroData.lhEquipment;
         var rh = hero.HeroData.rhEquipment;
-        if (lh != null && lh.action != null) { lhEquipmentCard = CreateCard(equip1Slot, lh.action); }
-        if (rh != null && rh.action != null) { rhEquipmentCard = CreateCard(equip2Slot, rh.action); }
+        if (lh != null && lh.action != null) { lhEquipmentCard = CreateCard(equip1Slot.position, equip1Slot, lh.action); }
+        if (rh != null && rh.action != null) { rhEquipmentCard = CreateCard(equip2Slot.position, equip2Slot, rh.action); }
         for (int i = 0; i < handSize; i++) { DrawCard(); }
     }
 
     public void EndHandTurn() {
-        DiscardPile.AddRange(hand);
-        hand.Clear();
-        Destroy(lhEquipmentCard);
-        Destroy(rhEquipmentCard);
+        Tools.IterateBackwards(cardViews, DiscardCard);
+        DiscardCard(lhEquipmentCard);
+        DiscardCard(rhEquipmentCard);
+
     }
 
     public void DrawCard() {
@@ -75,8 +79,10 @@ public class HandController : Singleton<HandController> {
     }
 
     public void DiscardCard(CardView card) {
-        if (card == lhEquipmentCard || card == rhEquipmentCard) {
-            Destroy(card);
+        if (card == null) {
+            return;
+        } else if (card == lhEquipmentCard || card == rhEquipmentCard) {
+            Destroy(card.gameObject);
         } else {
             var handIndex = cardViews.IndexOf(card);
             hero.discardPile.Add(hand[handIndex]);
@@ -87,21 +93,28 @@ public class HandController : Singleton<HandController> {
 
     private void UpdateHand() {
         foreach (var c in cardViews) {
-            Destroy(c);
+            Destroy(c.gameObject);
         }
+        cardViews.Clear();
+
+        var seperation = Mathf.Min(MAX_CARD_SEPERATION, MAX_HAND_WIDTH / (hand.Count - 1));
+        var leftOffset = new Vector3((seperation * (hand.Count - 1)) / -2f, 0 , 0);
+
         for (int i=0; i<hand.Count; i++) {
-            cardViews.Add(CreateCard(cardSlots[i], hand[i].action));
+            var pos = handSlot.transform.position + leftOffset + new Vector3(i * seperation, 0, i);
+            cardViews.Add(CreateCard(pos, handSlot, hand[i].action));
         }
+
+        combatUI.DrawSize.Value = DrawDeck.Count;
+        combatUI.DiscardSize.Value = DiscardPile.Count;
     }
 
-    private CardView CreateCard(GameObject location, HeroActionData action) {
-        var go = Instantiate(cardPrefab, location.transform.position, Quaternion.identity, location.transform);
+    private CardView CreateCard(Vector3 location, Transform parent, HeroActionData action) {
+        var go = Instantiate(cardPrefab, location, Quaternion.identity, parent);
         var view = go.GetComponent<CardView>();
         view.Init(this, action, hero);
         return view;
-    }
-
-    
+    }    
 
     private void Update() {
         if (currentCard != null && isHoldingCard) {

@@ -70,7 +70,6 @@ public class ActionLogic {
         if (a.type == ActiveType.wait) {
             yield return new WaitForSeconds(a.amount / 1000f);
             yield break;
-
         } else if (a.type == ActiveType.advance) {
             if (source.isHero) { yield return combatMaster.HeroesAdvanceCoroutine(); }
             else { MonsterMoveAction(CurrentCombatant, true); }            
@@ -78,8 +77,16 @@ public class ActionLogic {
         } else if (a.type == ActiveType.retreat) {
             if (!source.isHero) { MonsterMoveAction(CurrentCombatant, false); }
             yield break;
+        } else if (a.type == ActiveType.draw) { 
+            if (source.isHero) { 
+                for (int i=0; i<a.amount; i++) {
+                    HandController.Instance.DrawCard();
+                }
+            }
+            yield break;
         }
 
+        // targetting actives
         var targets = new List<Combatant>();
         if (a.targettingMode == ActiveTarget.Target) {
             targets.Add(target);

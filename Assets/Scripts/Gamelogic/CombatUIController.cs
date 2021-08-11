@@ -20,6 +20,8 @@ public class CombatUIController : Singleton<CombatUIController> {
     public EProperty<bool> IsAdvanceAllowed = new EProperty<bool>();
     public EProperty<int> EnergyRemaining = new EProperty<int>();
     public EProperty<int> EnergyMax = new EProperty<int>();
+    public EProperty<int> DrawSize = new EProperty<int>();
+    public EProperty<int> DiscardSize = new EProperty<int>();
     public EProperty<Combatant> HoveredCombatant = new EProperty<Combatant>();
 
     private CombatantHero CurrentHero => combatController.CurrentCombatant.isHero ? (CombatantHero)combatController.CurrentCombatant : null;

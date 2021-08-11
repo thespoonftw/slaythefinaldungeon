@@ -40,6 +40,12 @@ public class Tools : Singleton<Tools> {
     public static int RandomSign() {
         return UnityEngine.Random.Range(0, 2) * 2 - 1;
     }
+
+    public static void IterateBackwards<T>(List<T> items, Action<T> action) {
+        for (int i = items.Count - 1; i>=0; i--) {
+            action(items[i]);
+        }
+    }
 }
 
 
